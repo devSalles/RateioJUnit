@@ -7,31 +7,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "despesa")
+@Table(name = "divisoes")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Despesa {
-
+public class Divisao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String descricao;
-
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal valorTotal;
+    private BigDecimal valor;
 
     @ManyToOne
-    @JoinColumn(name = "pagador_id",nullable = false)
-    private Usuario pagador;
+    @JoinColumn(name = "usuario_id",nullable = false)
+    private Usuario usuario;
 
-    @OneToMany(mappedBy = "despesa",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Divisao> divisoes = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "despesa_id",nullable = false)
+    private Despesa despesa;
 }
