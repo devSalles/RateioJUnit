@@ -22,5 +22,11 @@ public class Saldo {
     @Column(nullable = false)
     private BigDecimal valor;
 
+    @ManyToOne
+    @JoinColumn(name = "devedor_id",nullable = false)
+    private Usuario devedor;
 
+    @ManyToOne
+    @JoinColumn(name = "credor_id",nullable = false)
+    private Usuario credor;
 }
