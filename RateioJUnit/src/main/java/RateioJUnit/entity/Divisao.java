@@ -24,7 +24,7 @@ public class Divisao {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id",nullable = false)
-    private Usuario usuario;
+    private Participante participante;
 
     @ManyToOne
     @JoinColumn(name = "despesa_id",nullable = false)

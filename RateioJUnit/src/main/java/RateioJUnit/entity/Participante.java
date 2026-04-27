@@ -16,7 +16,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Usuario {
+public class Participante {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,8 +42,8 @@ public class Usuario {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Usuario usuario = (Usuario) o;
-        return Objects.equals(id, usuario.id);
+        Participante participante = (Participante) o;
+        return Objects.equals(id, participante.id);
     }
 
     @Override

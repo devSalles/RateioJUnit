@@ -24,9 +24,9 @@ public class Saldo {
 
     @ManyToOne
     @JoinColumn(name = "devedor_id",nullable = false)
-    private Usuario devedor;
+    private Participante devedor;
 
     @ManyToOne
     @JoinColumn(name = "credor_id",nullable = false)
-    private Usuario credor;
+    private Participante credor;
 }

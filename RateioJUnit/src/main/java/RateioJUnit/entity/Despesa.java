@@ -30,7 +30,7 @@ public class Despesa {
 
     @ManyToOne
     @JoinColumn(name = "pagador_id",nullable = false)
-    private Usuario pagador;
+    private Participante pagador;
 
     @OneToMany(mappedBy = "despesa",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Divisao> divisoes = new ArrayList<>();
