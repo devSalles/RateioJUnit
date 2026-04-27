@@ -1,4 +1,4 @@
 package RateioJUnit.dto.despesa;
 
-public class DespesaRequestDTO {
+public record DespesaRequestDTO() {
 }
