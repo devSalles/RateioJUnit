@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "participante")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -27,7 +27,7 @@ public class Participante {
     @Column(nullable = false,unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "participante")
     private List<Divisao> divisao = new ArrayList<>();
 
     @OneToMany(mappedBy = "pagador")
