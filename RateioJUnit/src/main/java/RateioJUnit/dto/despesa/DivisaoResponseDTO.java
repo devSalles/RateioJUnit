@@ -1,5 +1,7 @@
 package RateioJUnit.dto.despesa;
 
+import RateioJUnit.entity.Divisao;
+
 import java.math.BigDecimal;
 
 public record DivisaoResponseDTO(
@@ -9,4 +11,8 @@ public record DivisaoResponseDTO(
         BigDecimal valor
 
 ) {
+    public static DivisaoResponseDTO fromDivisao(Divisao divisao)
+    {
+        return new DivisaoResponseDTO(divisao.getId(), divisao.getParticipante().getNome(), divisao.getValor());
+    }
 }
