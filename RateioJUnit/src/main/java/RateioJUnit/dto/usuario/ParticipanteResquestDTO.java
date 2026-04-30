@@ -1,5 +1,6 @@
 package RateioJUnit.dto.usuario;
 
+import RateioJUnit.entity.Participante;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,4 +16,17 @@ public record ParticipanteResquestDTO(
         @Email(message = "formato de email de participante inválido")
         String email
 ) {
+
+    public Participante toParticipante() {
+        Participante participante = new Participante();
+        participante.setNome(this.nome);
+        participante.setEmail(this.email);
+        return participante;
+    }
+
+    public void updateParticipante(Participante participante)
+    {
+        participante.setNome(this.nome);
+        participante.setEmail(this.email);
+    }
 }
