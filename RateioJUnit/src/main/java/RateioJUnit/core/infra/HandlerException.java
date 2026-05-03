@@ -1,6 +1,10 @@
 package RateioJUnit.core.infra;
 
 import RateioJUnit.core.exception.*;
+import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
+import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
+import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
+import RateioJUnit.core.exception.participante.ParticipantePossuiDespesasException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
