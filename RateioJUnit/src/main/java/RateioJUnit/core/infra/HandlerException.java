@@ -1,8 +1,6 @@
 package RateioJUnit.core.infra;
 
-import RateioJUnit.core.exception.EmailNaoEncontradoException;
-import RateioJUnit.core.exception.EmailRepetidoCadastradoException;
-import RateioJUnit.core.exception.IdNaoEncontradoException;
+import RateioJUnit.core.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,9 +18,7 @@ public class HandlerException {
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<MessageRestError> globalExceptionHandler()
 //    {
-//        MessageRestError messageRestError = new MessageRestError(HttpStatus.INTERNAL_SERVER_ERROR
-//                , "Erro interno, tente novamente mais tarde!");
-//
+//        MessageRestError messageRestError = new MessageRestError(HttpStatus.INTERNAL_SERVER_ERROR,"Erro interno, tente novamente mais tarde!");
 //        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageRestError);
 //    }
 
@@ -32,7 +28,8 @@ public class HandlerException {
         Map<String,String> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error->errors.put(error.getField(),error.getDefaultMessage()));
-        MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,"Erro, verifique a entrada",errors);
+
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,"Erro, verifique os dados",errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
     }
 
@@ -44,8 +41,11 @@ public class HandlerException {
 
     //----------- EXCEÇÕES PARTICIPANTE -----------
 
-    @ExceptionHandler(EmailNaoEncontradoException.class)
-    public ResponseEntity<MessageRestError> EmailNaoEncontradoException(EmailNaoEncontradoException ex)
+    @ExceptionHandler({
+            EmailNaoEncontradoException.class,
+            NomeNaoEncontradoException.class
+    })
+    public ResponseEntity<MessageRestError> EmailENomeNaoEncontradoException(Exception ex)
     {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.NOT_FOUND,ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageRestError);
@@ -55,6 +55,13 @@ public class HandlerException {
     public ResponseEntity<MessageRestError> EmailRepetidoCadastradoException(EmailRepetidoCadastradoException ex)
     {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
+    }
+
+    @ExceptionHandler(ParticipantePossuiDespesasException.class)
+    public ResponseEntity<MessageRestError> ParticipantePossuiDespesasException(ParticipantePossuiDespesasException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT, ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
     }
 }
