@@ -19,8 +19,10 @@ public record ParticipanteResquestDTO(
 
     public Participante toParticipante() {
         Participante participante = new Participante();
+
         participante.setNome(this.nome);
         participante.setEmail(this.email);
+
         return participante;
     }
 
