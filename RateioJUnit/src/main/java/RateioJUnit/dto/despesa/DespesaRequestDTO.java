@@ -18,7 +18,7 @@ public record DespesaRequestDTO(
         @NotBlank(message = "Descrição obrigatória")
         String descricao,
 
-        @NotNull(message = "Valor obrigatório") @Positive(message = "O valor deve ser positivo")
+        @NotNull(message = "Valor obrigatório") @Positive(message = "O valor deve ser maior que zero")
         BigDecimal valorTotal,
 
         @NotNull(message = "Pagador obrigatório")

@@ -1,4 +1,4 @@
-package RateioJUnit.core.exception;
+package RateioJUnit.core.exception.participante;
 
 public class ParticipantePossuiDespesasException extends RuntimeException {
     public ParticipantePossuiDespesasException(String message) {

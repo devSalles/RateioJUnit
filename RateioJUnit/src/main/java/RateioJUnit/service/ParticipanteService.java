@@ -1,6 +1,10 @@
 package RateioJUnit.service;
 
 import RateioJUnit.core.exception.*;
+import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
+import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
+import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
+import RateioJUnit.core.exception.participante.ParticipantePossuiDespesasException;
 import RateioJUnit.dto.usuario.ParticipanteResponseDTO;
 import RateioJUnit.dto.usuario.ParticipanteResquestDTO;
 import RateioJUnit.entity.Participante;

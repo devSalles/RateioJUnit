@@ -1,4 +1,4 @@
-package RateioJUnit.core.exception;
+package RateioJUnit.core.exception.participante;
 
 public class EmailNaoEncontradoException extends RuntimeException {
     public EmailNaoEncontradoException(String message) {
