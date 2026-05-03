@@ -26,7 +26,7 @@ public record DespesaRequestDTO(
 
         @NotNull(message = "Participantes são obrigatórios")
         @Size(min = 2,message = "Devem ser no mínimo 2 participantes por despesa")
-        List<ParticipanteResquestDTO>  participantes,
+        List<DivisaoRequestDTO>  participantes,
 
         @NotNull(message = "Tipo de divisão e obrigatória")
         TipoDivisao tipoDivisao
