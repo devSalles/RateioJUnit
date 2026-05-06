@@ -32,19 +32,12 @@ public record DespesaRequestDTO(
         TipoDivisao tipoDivisao
 ) {
 
-    public Despesa toDespesa(Participante pagador) {
+    public Despesa toDespesa() {
 
         Despesa despesa = new Despesa();
 
         despesa.setDescricao(descricao);
         despesa.setValorTotal(valorTotal);
-        despesa.setId(idPagador);
-
-        if(despesa.getPagador() == null)
-        {
-            despesa.setPagador(pagador);
-        }
-
         despesa.setTipoDivisao(tipoDivisao);
         despesa.setStatusDespesa(StatusDespesa.CRIADA);
 
