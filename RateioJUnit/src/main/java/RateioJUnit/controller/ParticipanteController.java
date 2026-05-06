@@ -18,7 +18,7 @@ public class ParticipanteController {
 
     private final ParticipanteService participanteService;
 
-    @PostMapping("/salvar-participante")
+    @PostMapping("/adicionar-participante")
     public ParticipanteResponseDTO salvarParticipante(@Valid @RequestBody ParticipanteResquestDTO dto) {
         return participanteService.salvarParticipante(dto);
     }
