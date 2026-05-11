@@ -1,6 +1,10 @@
 package RateioJUnit.core.infra;
 
 import RateioJUnit.core.exception.*;
+import RateioJUnit.core.exception.despesa.DespesaInexistenteException;
+import RateioJUnit.core.exception.despesa.DiferenteValorTotalException;
+import RateioJUnit.core.exception.despesa.PagadorNaoEstaNaListaException;
+import RateioJUnit.core.exception.despesa.ValorNegativoException;
 import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
 import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
 import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
@@ -67,5 +71,33 @@ public class HandlerException {
     {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT, ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
+    }
+
+    //----------- EXCEÇÕES DESPESA -----------
+
+    @ExceptionHandler(ValorNegativoException.class)
+    public ResponseEntity<MessageRestError> ValorNegativoException(ValorNegativoException ex){
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
+    }
+
+    @ExceptionHandler(PagadorNaoEstaNaListaException.class)
+    public ResponseEntity<MessageRestError> PagadorNaoEstaNaListaException(PagadorNaoEstaNaListaException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
+    }
+
+    @ExceptionHandler(DespesaInexistenteException.class)
+    public ResponseEntity<MessageRestError> DespesaInexistenteException(DespesaInexistenteException ex){
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.NOT_FOUND,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageRestError);
+    }
+
+    @ExceptionHandler(DiferenteValorTotalException.class)
+    public ResponseEntity<MessageRestError> DiferenteValorTotalException(DiferenteValorTotalException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
     }
 }
