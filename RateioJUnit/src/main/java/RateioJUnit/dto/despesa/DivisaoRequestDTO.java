@@ -12,7 +12,6 @@ public record DivisaoRequestDTO(
         @NotNull(message = "ID de participante obrigatório")
         Long idParticipante,
 
-        @NotNull(message = "O valor e obrigatório")
         BigDecimal valor
 
 ) {

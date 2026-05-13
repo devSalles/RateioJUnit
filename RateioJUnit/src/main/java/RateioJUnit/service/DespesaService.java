@@ -2,6 +2,7 @@ package RateioJUnit.service;
 
 import RateioJUnit.ENUM.TipoDivisao;
 import RateioJUnit.core.exception.IdNaoEncontradoException;
+import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.core.exception.despesa.*;
 import RateioJUnit.dto.despesa.DespesaRequestDTO;
 import RateioJUnit.dto.despesa.DespesaResponseDTO;
@@ -37,7 +38,7 @@ public class DespesaService {
 
         List<Participante> pagadores = despesaRequestDTO.participantes().stream()
                 .map(divDto->this.participanteRepository.
-                        findById(despesaRequestDTO.idPagador()).orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
+                        findById(divDto.idParticipante()).orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
                 .toList();
 
         boolean pagadorNaLista = pagadores.stream().anyMatch(p->p.getId().equals(pagador.getId()));
@@ -81,6 +82,25 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
+    public List<DespesaResponseDTO> listarTodasDespesas()
+    {
+        List<Despesa> despesas = this.despesaRepository.findAll();
+
+        if(despesas.isEmpty())
+        {
+            throw new NenhumRegistroException("Nenhum registro foi encontrado");
+        }
+
+        return despesas.stream().map(DespesaResponseDTO::fromDespesa).toList();
+    }
+
+    public DespesaResponseDTO buscarDespesaPorId(Long id)
+    {
+        Despesa despesa = this.despesaRepository.findById(id).orElseThrow(()->new IdNaoEncontradoException("Despesa não encontrada"));
+        return DespesaResponseDTO.fromDespesa(despesa);
+    }
+
+
 
     // --------------- METODOS AUXILIARES ---------------
 
@@ -96,13 +116,14 @@ public class DespesaService {
 
         List<Divisao> divisoes = new ArrayList<>();
 
-        for(int i=0;i<participantes.size();i++){
+        for(int i=0;i<participantes.size();i++)
+        {
             BigDecimal valorFinal = valorBase;
 
-            if(valorFinal.compareTo(BigDecimal.ZERO)>0)
+            if(resto.compareTo(BigDecimal.ZERO)>0)
             {
                 valorFinal = valorFinal.add(new BigDecimal("0.01"));
-                valorBase = resto.subtract(new BigDecimal("0.01"));
+                resto = resto.subtract(new BigDecimal("0.01"));
             }
 
             Divisao divisao = new Divisao();

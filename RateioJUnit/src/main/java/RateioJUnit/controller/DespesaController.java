@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/Despesa")
 @RequiredArgsConstructor
@@ -18,10 +20,18 @@ public class DespesaController {
 
     private final DespesaService despesaService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> adicionarDespesa(@RequestBody @Valid DespesaRequestDTO despesaRequestDTO)
-    {
+    @PostMapping("/adicionar-despesa")
+    public ResponseEntity<?> adicionarDespesa(@RequestBody @Valid DespesaRequestDTO despesaRequestDTO) {
         return ResponseEntity.ok(despesaService.adicionarDespesa(despesaRequestDTO));
+    }
+
+    @GetMapping("buscar-todas-despesa")
+    public ResponseEntity<List<DespesaResponseDTO>> listarTodasDespesas() {
+        return ResponseEntity.ok(despesaService.listarTodasDespesas());
+    }
+
+    @GetMapping("buscar-despesa-especifica/{id}")
+    public ResponseEntity<DespesaResponseDTO> buscarDespesaPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(despesaService.buscarDespesaPorId(id));
     }
 }

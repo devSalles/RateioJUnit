@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record DespesaRequestDTO(
@@ -40,6 +41,7 @@ public record DespesaRequestDTO(
         despesa.setValorTotal(valorTotal);
         despesa.setTipoDivisao(tipoDivisao);
         despesa.setStatusDespesa(StatusDespesa.CRIADA);
+        despesa.setDataCriacao(LocalDateTime.now());
 
         return despesa;
     }
