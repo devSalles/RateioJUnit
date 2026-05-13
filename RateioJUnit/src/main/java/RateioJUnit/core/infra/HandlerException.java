@@ -1,10 +1,7 @@
 package RateioJUnit.core.infra;
 
 import RateioJUnit.core.exception.*;
-import RateioJUnit.core.exception.despesa.DespesaInexistenteException;
-import RateioJUnit.core.exception.despesa.DiferenteValorTotalException;
-import RateioJUnit.core.exception.despesa.PagadorNaoEstaNaListaException;
-import RateioJUnit.core.exception.despesa.ValorNegativoException;
+import RateioJUnit.core.exception.despesa.*;
 import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
 import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
 import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
@@ -43,6 +40,13 @@ public class HandlerException {
 
     @ExceptionHandler(IdNaoEncontradoException.class)
     public ResponseEntity<MessageRestError> IdNaoEncontradoException(IdNaoEncontradoException ex){
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.NOT_FOUND,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageRestError);
+    }
+
+    @ExceptionHandler(NenhumRegistroException.class)
+    public ResponseEntity<MessageRestError> NenhumRegistroException(NenhumRegistroException ex)
+    {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.NOT_FOUND,ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageRestError);
     }
@@ -99,5 +103,12 @@ public class HandlerException {
     {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
+    }
+
+    @ExceptionHandler(ParticipantesDuplicadosException.class)
+    public ResponseEntity<MessageRestError> ParticipantesDuplicadosException(ParticipantesDuplicadosException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
     }
 }
