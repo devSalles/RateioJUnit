@@ -105,12 +105,16 @@ public class ParticipanteService {
     public void validacaoExclusao(Long idParticipante)
     {
         //Verifica se participante possui despesa pagas
-        boolean possuiDespesasPagas = this.participanteRepository.existsBydespesasPagas(idParticipante);
+        boolean possuiDespesasPagas = this.participanteRepository.existsByIdAndDespesasPagasIsNotEmpty(idParticipante);
 
         //Verifica se participante possui despesas no histórico
-        boolean possuiVinculoComoParticipante = this.participanteRepository.existsByDespesasPagasPagador(idParticipante);
+        boolean possuiDivisoes = this.participanteRepository.existsByIdAndDivisaoIsNotEmpty(idParticipante);
 
-        if(possuiDespesasPagas||possuiVinculoComoParticipante)
+        boolean possuiSaldoDevedor = this.participanteRepository.existsByIdAndSaldoDevedorIsNotEmpty(idParticipante);
+
+        boolean possuiSaldoCredor = this.participanteRepository.existsByIdAndSaldoCredorIsNotEmpty(idParticipante);
+
+        if(possuiDespesasPagas||possuiDivisoes||possuiSaldoDevedor||possuiSaldoCredor)
         {
             throw new ParticipantePossuiDespesasException();
         }
