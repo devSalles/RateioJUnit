@@ -16,9 +16,14 @@ public interface ParticipanteRepository extends JpaRepository<Participante, Long
 
     boolean existsByEmail(String email);
 
-    //Verifica se participante possui despesa pagas
-    boolean existsBydespesasPagas(Long idParticipante);
+    boolean existsByIdAndDespesasPagasIsNotEmpty(Long idParticipante);
 
-    //Verifica se participante possui despesas no histórico
-    boolean existsByDespesasPagasPagador(Long idParticipante);
+    //Verifica se o participante já participou da despesa
+    boolean existsByIdAndDivisaoIsNotEmpty(Long idParticipante);
+
+    //Verifica se está devendedo
+    boolean existsByIdAndSaldoDevedorIsNotEmpty(Long idParticipante);
+
+    //Verifica se possui crédito
+    boolean existsByIdAndSaldoCredorIsNotEmpty(Long idParticipante);
 }
