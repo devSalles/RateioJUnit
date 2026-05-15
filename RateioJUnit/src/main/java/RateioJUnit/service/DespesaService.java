@@ -7,6 +7,7 @@ import RateioJUnit.core.exception.despesa.*;
 import RateioJUnit.dto.despesa.DespesaRequestDTO;
 import RateioJUnit.dto.despesa.DespesaResponseDTO;
 import RateioJUnit.dto.despesa.DivisaoRequestDTO;
+import RateioJUnit.dto.usuario.ParticipanteResquestDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
@@ -36,9 +37,10 @@ public class DespesaService {
     {
         Participante pagador = participanteService.buscarID(despesaRequestDTO.idPagador());
 
-        List<Participante> pagadores = despesaRequestDTO.participantes().stream()
-                .map(divDto->this.participanteRepository.
-                        findById(divDto.idParticipante()).orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
+        List<Participante> pagadores = despesaRequestDTO.participantes()
+                .stream()
+                .map(divDto->this.participanteRepository.findById(divDto.idParticipante())
+                        .orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
                 .toList();
 
         boolean pagadorNaLista = pagadores.stream().anyMatch(p->p.getId().equals(pagador.getId()));
@@ -71,7 +73,6 @@ public class DespesaService {
 
         BigDecimal somaValorDiv = despesa.getDivisoes().stream().map(Divisao::getValor)
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
-
         if(somaValorDiv.compareTo(despesa.getValorTotal()) != 0)
         {
             throw new DiferenteValorTotalException();
@@ -80,6 +81,53 @@ public class DespesaService {
         this.despesaRepository.save(despesa);
 
         return DespesaResponseDTO.fromDespesa(despesa);
+    }
+
+    public DespesaResponseDTO atualizarDespesa(Long idDespesa, DespesaRequestDTO despesaUpdateReqDTO)
+    {
+        Despesa despesaID = this.despesaRepository.findById(idDespesa).orElseThrow(()->new IdNaoEncontradoException("Despesa inexistente"));
+        Participante pagadorID = this.participanteService.buscarID(despesaUpdateReqDTO.idPagador());
+
+        List<Participante>participantes = despesaUpdateReqDTO.participantes()
+                .stream()
+                .map(divReqUpdt->
+                        this.participanteRepository.findById(divReqUpdt.idParticipante())
+                                .orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
+                .toList();
+
+        boolean pagadoresNaLista = participantes.stream().anyMatch(p->p.getId().equals(pagadorID.getId()));
+        if(!pagadoresNaLista)
+        {
+            throw new PagadorNaoEstaNaListaException();
+        }
+
+        long participantesDistintos = participantes.stream().map(Participante::getId).distinct().count();
+        if(participantesDistintos != participantes.size())
+        {
+            throw new ParticipantesDuplicadosException();
+        }
+
+        despesaUpdateReqDTO.updateDespesa(despesaID);
+        despesaID.setPagador(pagadorID);
+
+        if(despesaUpdateReqDTO.tipoDivisao()== TipoDivisao.IGUAL)
+        {
+            AplicarDivisaoIgual(despesaID,participantes);
+        }
+        else if(despesaUpdateReqDTO.tipoDivisao() == TipoDivisao.PERSONALIZADA)
+        {
+            AplicarDivisaoPersonalizada(despesaID,participantes,despesaUpdateReqDTO.participantes());
+        }
+
+        BigDecimal somaValorDiv = despesaID.getDivisoes().stream().map(Divisao::getValor)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if(somaValorDiv.compareTo(despesaID.getValorTotal()) != 0)
+        {
+            throw new DiferenteValorTotalException();
+        }
+
+        this.despesaRepository.save(despesaID);
+        return  DespesaResponseDTO.fromDespesa(despesaID);
     }
 
     public List<DespesaResponseDTO> listarTodasDespesas()
@@ -99,8 +147,6 @@ public class DespesaService {
         Despesa despesa = this.despesaRepository.findById(id).orElseThrow(()->new IdNaoEncontradoException("Despesa não encontrada"));
         return DespesaResponseDTO.fromDespesa(despesa);
     }
-
-
 
     // --------------- METODOS AUXILIARES ---------------
 
