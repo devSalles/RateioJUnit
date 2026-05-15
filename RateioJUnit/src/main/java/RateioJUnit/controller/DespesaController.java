@@ -25,6 +25,12 @@ public class DespesaController {
         return ResponseEntity.ok(despesaService.adicionarDespesa(despesaRequestDTO));
     }
 
+    @PutMapping("/atualizar-despesa/{id}")
+    public ResponseEntity<DespesaResponseDTO> atualizarDespesa(@PathVariable Long id,
+            @RequestBody @Valid DespesaRequestDTO despesaRequestDTO) {
+        return ResponseEntity.ok(despesaService.atualizarDespesa(id, despesaRequestDTO));
+    }
+
     @GetMapping("buscar-todas-despesa")
     public ResponseEntity<List<DespesaResponseDTO>> listarTodasDespesas() {
         return ResponseEntity.ok(despesaService.listarTodasDespesas());

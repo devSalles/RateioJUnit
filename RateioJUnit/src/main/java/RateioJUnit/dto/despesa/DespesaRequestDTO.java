@@ -45,4 +45,13 @@ public record DespesaRequestDTO(
 
         return despesa;
     }
+
+    public void updateDespesa(Despesa despesa)
+    {
+        despesa.setDescricao(descricao);
+        despesa.setValorTotal(valorTotal);
+        despesa.setTipoDivisao(tipoDivisao);
+        despesa.setStatusDespesa(StatusDespesa.CRIADA);
+
+    }
 }
