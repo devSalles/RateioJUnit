@@ -2,10 +2,7 @@ package RateioJUnit.core.infra;
 
 import RateioJUnit.core.exception.*;
 import RateioJUnit.core.exception.despesa.*;
-import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
-import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
-import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
-import RateioJUnit.core.exception.participante.ParticipantePossuiDespesasException;
+import RateioJUnit.core.exception.participante.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -75,6 +72,13 @@ public class HandlerException {
     {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT, ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
+    }
+
+    @ExceptionHandler(ParticipanteInvalidoException.class)
+    public ResponseEntity<MessageRestError> ParticipanteInvalidoException(ParticipanteInvalidoException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.BAD_REQUEST,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
     }
 
     //----------- EXCEÇÕES DESPESA -----------

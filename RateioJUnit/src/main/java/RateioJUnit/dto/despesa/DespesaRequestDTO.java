@@ -4,6 +4,7 @@ import RateioJUnit.dto.divisao.DivisaoRequestDTO;
 import RateioJUnit.enums.StatusDespesa;
 import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.entity.Despesa;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -26,7 +27,7 @@ public record DespesaRequestDTO(
 
         @NotNull(message = "Participantes são obrigatórios")
         @Size(min = 2,message = "Devem ser no mínimo 2 participantes por despesa")
-        List<DivisaoRequestDTO>  participantes,
+        List<@Valid DivisaoRequestDTO>  participantes,
 
         @NotNull(message = "Tipo de divisão e obrigatória")
         TipoDivisao tipoDivisao

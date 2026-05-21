@@ -1,5 +1,6 @@
 package RateioJUnit.service;
 
+import RateioJUnit.core.exception.participante.ParticipanteInvalidoException;
 import RateioJUnit.enums.StatusDespesa;
 import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.core.exception.IdNaoEncontradoException;
@@ -40,18 +41,25 @@ public class DespesaService {
 
         List<Participante> pagadores = despesaRequestDTO.participantes()
                 .stream()
-                .map(divDto->this.participanteRepository.findById(divDto.idParticipante())
-                        .orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
+                .map(divDto ->
+                {
+                    if (divDto == null) {
+                        throw new ParticipanteInvalidoException();
+                    }
+
+                    return this.participanteRepository.findById(divDto.idParticipante())
+                            .orElseThrow(() -> new IdNaoEncontradoException("ID de pagador não encontrado"));
+                })
                 .toList();
 
-        boolean pagadorNaLista = pagadores.stream().anyMatch(p->p.getId().equals(pagador.getId()));
-        if(!pagadorNaLista)
+        boolean pagadorNaLista = pagadores.stream().anyMatch(p -> p.getId().equals(pagador.getId()));
+        if (!pagadorNaLista)
         {
             throw new PagadorNaoEstaNaListaException();
         }
 
         long participanteDistintos = pagadores.stream().map(Participante::getId).distinct().count();
-        if(participanteDistintos != pagadores.size())
+        if (participanteDistintos != pagadores.size())
         {
             throw new ParticipantesDuplicadosException();
         }
@@ -59,22 +67,20 @@ public class DespesaService {
         Despesa despesa = despesaRequestDTO.toDespesa();
         despesa.setPagador(pagador);
 
-        if(despesaRequestDTO.tipoDivisao() == TipoDivisao.IGUAL)
+        if (despesaRequestDTO.tipoDivisao() == TipoDivisao.IGUAL)
         {
-            AplicarDivisaoIgual(despesa,pagadores);
-        }
-        else if(despesaRequestDTO.tipoDivisao() == TipoDivisao.PERSONALIZADA)
+            AplicarDivisaoIgual(despesa, pagadores);
+        } else if (despesaRequestDTO.tipoDivisao() == TipoDivisao.PERSONALIZADA)
         {
-            AplicarDivisaoPersonalizada(despesa,pagadores,despesaRequestDTO.participantes());
-        }
-        else
+            AplicarDivisaoPersonalizada(despesa, pagadores, despesaRequestDTO.participantes());
+        } else
         {
             throw new DespesaInexistenteException();
         }
 
         BigDecimal somaValorDiv = despesa.getDivisoes().stream().map(Divisao::getValor)
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
-        if(somaValorDiv.compareTo(despesa.getValorTotal()) != 0)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (somaValorDiv.compareTo(despesa.getValorTotal()) != 0)
         {
             throw new DiferenteValorTotalException();
         }
@@ -88,19 +94,19 @@ public class DespesaService {
     public DespesaResponseDTO atualizarDespesa(Long idDespesa, DespesaUpdtDto despesaUpdtDto)
     {
         Despesa despesaID = this.despesaRepository.findById(idDespesa)
-                .orElseThrow(()->new IdNaoEncontradoException("Despesa inexistente"));
+                .orElseThrow(() -> new IdNaoEncontradoException("Despesa inexistente"));
 
         Participante pagador = this.participanteService.buscarID(despesaUpdtDto.idPagador());
 
-        if(despesaID.getStatusDespesa() != StatusDespesa.CRIADA)
+        if (despesaID.getStatusDespesa() != StatusDespesa.CRIADA)
         {
             throw new DespesaEmStatusInicialException();
         }
 
         boolean pagadorNaLista = despesaID.getDivisoes()
-                .stream().anyMatch(d->d.getParticipante().getId().equals(pagador.getId()));
+                .stream().anyMatch(d -> d.getParticipante().getId().equals(pagador.getId()));
 
-        if(!pagadorNaLista)
+        if (!pagadorNaLista)
         {
             throw new PagadorNaoEstaNaListaException();
         }
@@ -112,11 +118,12 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesaID);
     }
 
+
     public List<DespesaResponseDTO> listarTodasDespesas()
     {
         List<Despesa> despesas = this.despesaRepository.findAll();
 
-        if(despesas.isEmpty())
+        if (despesas.isEmpty())
         {
             throw new NenhumRegistroException("Nenhum registro foi encontrado");
         }
@@ -128,7 +135,7 @@ public class DespesaService {
     {
         List<Despesa> despesaStatus = this.despesaRepository.findByStatusDespesa(statusDespesa);
 
-        if(despesaStatus.isEmpty())
+        if (despesaStatus.isEmpty())
         {
             throw new DespesaInexistenteException();
         }
@@ -136,11 +143,11 @@ public class DespesaService {
         return despesaStatus.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
-    public List<DespesaResponseDTO> listarDespesaPorTipoDivisao(TipoDivisao tipoDivisao)
-    {
-        List<Despesa> despesaTipoDivisao =  this.despesaRepository.findByTipoDivisao(tipoDivisao);
+    public List<DespesaResponseDTO> listarDespesaPorTipoDivisao(TipoDivisao tipoDivisao
+    ) {
+        List<Despesa> despesaTipoDivisao = this.despesaRepository.findByTipoDivisao(tipoDivisao);
 
-        if(despesaTipoDivisao.isEmpty())
+        if (despesaTipoDivisao.isEmpty())
         {
             throw new DespesaInexistenteException();
         }
@@ -150,7 +157,7 @@ public class DespesaService {
 
     public DespesaResponseDTO buscarDespesaPorId(Long id)
     {
-        Despesa despesa = this.despesaRepository.findById(id).orElseThrow(()->new IdNaoEncontradoException("Despesa não encontrada"));
+        Despesa despesa = this.despesaRepository.findById(id).orElseThrow(() -> new IdNaoEncontradoException("Despesa não encontrada"));
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
@@ -161,18 +168,18 @@ public class DespesaService {
         BigDecimal total = despesa.getValorTotal();
         int quantidade = participantes.size();
 
-        BigDecimal valorBase = total.divide(BigDecimal.valueOf(quantidade),2, RoundingMode.DOWN);
+        BigDecimal valorBase = total.divide(BigDecimal.valueOf(quantidade), 2, RoundingMode.DOWN);
         BigDecimal totalDistribuido = valorBase.multiply(BigDecimal.valueOf(quantidade));
 
         BigDecimal resto = total.subtract(totalDistribuido);
 
         List<Divisao> divisoes = new ArrayList<>();
 
-        for(int i=0;i<participantes.size();i++)
+        for (int i = 0; i < participantes.size(); i++)
         {
             BigDecimal valorFinal = valorBase;
 
-            if(resto.compareTo(BigDecimal.ZERO)>0)
+            if (resto.compareTo(BigDecimal.ZERO) > 0)
             {
                 valorFinal = valorFinal.add(new BigDecimal("0.01"));
                 resto = resto.subtract(new BigDecimal("0.01"));
@@ -188,20 +195,20 @@ public class DespesaService {
         despesa.setDivisoes(divisoes);
     }
 
-    public void AplicarDivisaoPersonalizada(Despesa despesa,  List<Participante> participantes ,
+    public void AplicarDivisaoPersonalizada(Despesa despesa, List<Participante> participantes,
                                             List<DivisaoRequestDTO> participantesDTO)
     {
         List<Divisao> divisoes = new ArrayList<>();
 
-        for(Participante participante:participantes)
+        for (Participante participante : participantes)
         {
             DivisaoRequestDTO dto = participantesDTO.stream()
-                    .filter(d->d.idParticipante().equals(participante.getId()))
-                    .findFirst().orElseThrow(()->new IdNaoEncontradoException("ID de participante não encontrado"));
+                    .filter(d -> d.idParticipante().equals(participante.getId()))
+                    .findFirst().orElseThrow(() -> new IdNaoEncontradoException("ID de participante não encontrado"));
 
             BigDecimal valor = dto.valor();
 
-            if(valor==null||valor.compareTo(BigDecimal.ZERO)<=0)
+            if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0)
             {
                 throw new ValorNegativoException();
             }
