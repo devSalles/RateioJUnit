@@ -1,4 +1,4 @@
-package RateioJUnit.dto.despesa;
+package RateioJUnit.dto.divisao;
 
 import RateioJUnit.entity.Divisao;
 
