@@ -1,13 +1,14 @@
 package RateioJUnit.service;
 
-import RateioJUnit.ENUM.TipoDivisao;
+import RateioJUnit.enums.StatusDespesa;
+import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.core.exception.IdNaoEncontradoException;
 import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.core.exception.despesa.*;
 import RateioJUnit.dto.despesa.DespesaRequestDTO;
 import RateioJUnit.dto.despesa.DespesaResponseDTO;
-import RateioJUnit.dto.despesa.DivisaoRequestDTO;
-import RateioJUnit.dto.usuario.ParticipanteResquestDTO;
+import RateioJUnit.dto.despesa.DespesaUpdtDto;
+import RateioJUnit.dto.divisao.DivisaoRequestDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
@@ -83,51 +84,32 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
-    public DespesaResponseDTO atualizarDespesa(Long idDespesa, DespesaRequestDTO despesaUpdateReqDTO)
+    @Transactional
+    public DespesaResponseDTO atualizarDespesa(Long idDespesa, DespesaUpdtDto despesaUpdtDto)
     {
-        Despesa despesaID = this.despesaRepository.findById(idDespesa).orElseThrow(()->new IdNaoEncontradoException("Despesa inexistente"));
-        Participante pagadorID = this.participanteService.buscarID(despesaUpdateReqDTO.idPagador());
+        Despesa despesaID = this.despesaRepository.findById(idDespesa)
+                .orElseThrow(()->new IdNaoEncontradoException("Despesa inexistente"));
 
-        List<Participante>participantes = despesaUpdateReqDTO.participantes()
-                .stream()
-                .map(divReqUpdt->
-                        this.participanteRepository.findById(divReqUpdt.idParticipante())
-                                .orElseThrow(()->new IdNaoEncontradoException("ID de pagador não encontrado")))
-                .toList();
+        Participante pagador = this.participanteService.buscarID(despesaUpdtDto.idPagador());
 
-        boolean pagadoresNaLista = participantes.stream().anyMatch(p->p.getId().equals(pagadorID.getId()));
-        if(!pagadoresNaLista)
+        if(despesaID.getStatusDespesa() != StatusDespesa.CRIADA)
+        {
+            throw new DespesaEmStatusInicialException();
+        }
+
+        boolean pagadorNaLista = despesaID.getDivisoes()
+                .stream().anyMatch(d->d.getParticipante().getId().equals(pagador.getId()));
+
+        if(!pagadorNaLista)
         {
             throw new PagadorNaoEstaNaListaException();
         }
 
-        long participantesDistintos = participantes.stream().map(Participante::getId).distinct().count();
-        if(participantesDistintos != participantes.size())
-        {
-            throw new ParticipantesDuplicadosException();
-        }
-
-        despesaUpdateReqDTO.updateDespesa(despesaID);
-        despesaID.setPagador(pagadorID);
-
-        if(despesaUpdateReqDTO.tipoDivisao()== TipoDivisao.IGUAL)
-        {
-            AplicarDivisaoIgual(despesaID,participantes);
-        }
-        else if(despesaUpdateReqDTO.tipoDivisao() == TipoDivisao.PERSONALIZADA)
-        {
-            AplicarDivisaoPersonalizada(despesaID,participantes,despesaUpdateReqDTO.participantes());
-        }
-
-        BigDecimal somaValorDiv = despesaID.getDivisoes().stream().map(Divisao::getValor)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        if(somaValorDiv.compareTo(despesaID.getValorTotal()) != 0)
-        {
-            throw new DiferenteValorTotalException();
-        }
+        despesaID.setDescricao(despesaUpdtDto.descricao());
+        despesaID.setPagador(pagador);
 
         this.despesaRepository.save(despesaID);
-        return  DespesaResponseDTO.fromDespesa(despesaID);
+        return DespesaResponseDTO.fromDespesa(despesaID);
     }
 
     public List<DespesaResponseDTO> listarTodasDespesas()
@@ -140,6 +122,30 @@ public class DespesaService {
         }
 
         return despesas.stream().map(DespesaResponseDTO::fromDespesa).toList();
+    }
+
+    public List<DespesaResponseDTO> listarDespesaPorStatus(StatusDespesa statusDespesa)
+    {
+        List<Despesa> despesaStatus = this.despesaRepository.findByStatusDespesa(statusDespesa);
+
+        if(despesaStatus.isEmpty())
+        {
+            throw new DespesaInexistenteException();
+        }
+
+        return despesaStatus.stream().map(DespesaResponseDTO::fromDespesa).toList();
+    }
+
+    public List<DespesaResponseDTO> listarDespesaPorTipoDivisao(TipoDivisao tipoDivisao)
+    {
+        List<Despesa> despesaTipoDivisao =  this.despesaRepository.findByTipoDivisao(tipoDivisao);
+
+        if(despesaTipoDivisao.isEmpty())
+        {
+            throw new DespesaInexistenteException();
+        }
+
+        return despesaTipoDivisao.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
     public DespesaResponseDTO buscarDespesaPorId(Long id)
