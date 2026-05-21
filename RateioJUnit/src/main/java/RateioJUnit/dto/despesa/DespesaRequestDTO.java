@@ -1,10 +1,9 @@
 package RateioJUnit.dto.despesa;
 
-import RateioJUnit.ENUM.StatusDespesa;
-import RateioJUnit.ENUM.TipoDivisao;
-import RateioJUnit.dto.usuario.ParticipanteResquestDTO;
+import RateioJUnit.dto.divisao.DivisaoRequestDTO;
+import RateioJUnit.enums.StatusDespesa;
+import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.entity.Despesa;
-import RateioJUnit.entity.Participante;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -44,14 +43,5 @@ public record DespesaRequestDTO(
         despesa.setDataCriacao(LocalDateTime.now());
 
         return despesa;
-    }
-
-    public void updateDespesa(Despesa despesa)
-    {
-        despesa.setDescricao(descricao);
-        despesa.setValorTotal(valorTotal);
-        despesa.setTipoDivisao(tipoDivisao);
-        despesa.setStatusDespesa(StatusDespesa.CRIADA);
-
     }
 }

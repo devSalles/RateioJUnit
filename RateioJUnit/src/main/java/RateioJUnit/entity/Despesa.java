@@ -1,7 +1,7 @@
 package RateioJUnit.entity;
 
-import RateioJUnit.ENUM.StatusDespesa;
-import RateioJUnit.ENUM.TipoDivisao;
+import RateioJUnit.enums.StatusDespesa;
+import RateioJUnit.enums.TipoDivisao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
