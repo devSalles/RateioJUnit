@@ -1,4 +1,4 @@
-package RateioJUnit.ENUM;
+package RateioJUnit.enums;
 
 public enum StatusDespesa {
     CRIADA,

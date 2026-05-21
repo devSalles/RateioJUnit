@@ -1,8 +1,7 @@
-package RateioJUnit.dto.despesa;
+package RateioJUnit.dto.divisao;
 
 import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
