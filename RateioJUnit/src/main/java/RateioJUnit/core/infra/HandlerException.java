@@ -122,4 +122,18 @@ public class HandlerException {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
     }
+
+    @ExceptionHandler(DespesaJaFinalizadaException.class)
+    public ResponseEntity<MessageRestError> DespesaJaFinalizadaException(DespesaJaFinalizadaException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
+    }
+
+    @ExceptionHandler(DespesaCanceladaException.class)
+    public ResponseEntity<MessageRestError> DespesaCanceladaException(DespesaCanceladaException ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
+    }
 }
