@@ -70,10 +70,12 @@ public class DespesaService {
         if (despesaRequestDTO.tipoDivisao() == TipoDivisao.IGUAL)
         {
             AplicarDivisaoIgual(despesa, pagadores);
-        } else if (despesaRequestDTO.tipoDivisao() == TipoDivisao.PERSONALIZADA)
+        }
+        else if (despesaRequestDTO.tipoDivisao() == TipoDivisao.PERSONALIZADA)
         {
             AplicarDivisaoPersonalizada(despesa, pagadores, despesaRequestDTO.participantes());
-        } else
+        }
+        else
         {
             throw new DespesaInexistenteException();
         }
@@ -93,8 +95,7 @@ public class DespesaService {
     @Transactional
     public DespesaResponseDTO atualizarDespesa(Long idDespesa, DespesaUpdtDto despesaUpdtDto)
     {
-        Despesa despesaID = this.despesaRepository.findById(idDespesa)
-                .orElseThrow(() -> new IdNaoEncontradoException("Despesa inexistente"));
+        Despesa despesaID = buscarID(idDespesa);
 
         Participante pagador = this.participanteService.buscarID(despesaUpdtDto.idPagador());
 
@@ -118,6 +119,12 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesaID);
     }
 
+    public DespesaResponseDTO finalizacaoDespesa(Long idDespesa)
+    {
+        Despesa despesaID = buscarID(idDespesa);
+
+        validarFinalizacaoDespesa(despesaID);
+    }
 
     public List<DespesaResponseDTO> listarTodasDespesas()
     {
@@ -143,8 +150,8 @@ public class DespesaService {
         return despesaStatus.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
-    public List<DespesaResponseDTO> listarDespesaPorTipoDivisao(TipoDivisao tipoDivisao
-    ) {
+    public List<DespesaResponseDTO> listarDespesaPorTipoDivisao(TipoDivisao tipoDivisao)
+    {
         List<Despesa> despesaTipoDivisao = this.despesaRepository.findByTipoDivisao(tipoDivisao);
 
         if (despesaTipoDivisao.isEmpty())
@@ -155,13 +162,32 @@ public class DespesaService {
         return despesaTipoDivisao.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
-    public DespesaResponseDTO buscarDespesaPorId(Long id)
+    public DespesaResponseDTO buscarDespesaPorId(Long idDespesa)
     {
-        Despesa despesa = this.despesaRepository.findById(id).orElseThrow(() -> new IdNaoEncontradoException("Despesa não encontrada"));
+        Despesa despesa = buscarID(idDespesa);
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
     // --------------- METODOS AUXILIARES ---------------
+
+    public Despesa buscarID(Long idDespesa)
+    {
+        return this.despesaRepository.findById(idDespesa)
+                .orElseThrow(() -> new IdNaoEncontradoException("Despesa não encontrada"));
+    }
+
+    private void validarFinalizacaoDespesa(Despesa despesa)
+    {
+        if(despesa.getStatusDespesa() == StatusDespesa.FINALIZADA)
+        {
+            throw new DespesaJaFinalizadaException();
+        }
+
+        if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
+        {
+            throw new DespesaCanceladaException();
+        }
+    }
 
     private void AplicarDivisaoIgual(Despesa despesa, List<Participante> participantes)
     {
