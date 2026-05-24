@@ -119,12 +119,12 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesaID);
     }
 
-    public DespesaResponseDTO finalizacaoDespesa(Long idDespesa)
-    {
-        Despesa despesaID = buscarID(idDespesa);
-
-        validarFinalizacaoDespesa(despesaID);
-    }
+//    public DespesaResponseDTO finalizacaoDespesa(Long idDespesa)
+//    {
+//        Despesa despesaID = buscarID(idDespesa);
+//
+//        validarFinalizacaoDespesa(despesaID);
+//    }
 
     public List<DespesaResponseDTO> listarTodasDespesas()
     {
