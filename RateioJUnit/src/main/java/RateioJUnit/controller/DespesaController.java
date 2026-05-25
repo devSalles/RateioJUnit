@@ -33,6 +33,11 @@ public class DespesaController {
         return ResponseEntity.ok(despesaService.atualizarDespesa(id, despesaUpdtDTO));
     }
 
+    @PutMapping("/finalizar-despesa/{id}")
+    public ResponseEntity<DespesaResponseDTO> finalizarDespesa(@PathVariable Long id) {
+        return ResponseEntity.ok(despesaService.finalizacaoDespesa(id));
+    }
+
     @GetMapping("/buscar-todas-despesa")
     public ResponseEntity<List<DespesaResponseDTO>> listarTodasDespesas() {
         return ResponseEntity.ok(despesaService.listarTodasDespesas());
