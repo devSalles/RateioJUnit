@@ -1,6 +1,7 @@
 package RateioJUnit.service;
 
 import RateioJUnit.core.exception.participante.ParticipanteInvalidoException;
+import RateioJUnit.entity.Saldo;
 import RateioJUnit.enums.StatusDespesa;
 import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.core.exception.IdNaoEncontradoException;
@@ -15,6 +16,7 @@ import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
 import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
+import RateioJUnit.repository.SaldoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class DespesaService {
     private final DespesaRepository despesaRepository;
     private final ParticipanteService participanteService;
     private final ParticipanteRepository participanteRepository;
+    private final SaldoRepository saldoRepository;
 
 
     @Transactional
@@ -119,12 +122,18 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesaID);
     }
 
-//    public DespesaResponseDTO finalizacaoDespesa(Long idDespesa)
-//    {
-//        Despesa despesaID = buscarID(idDespesa);
-//
-//        validarFinalizacaoDespesa(despesaID);
-//    }
+    @Transactional
+    public DespesaResponseDTO finalizacaoDespesa(Long idDespesa)
+    {
+        Despesa despesaID = buscarID(idDespesa);
+
+        validarFinalizacaoDespesa(despesaID);
+        calcularSaldo(despesaID);
+        despesaID.setStatusDespesa(StatusDespesa.FINALIZADA);
+
+        this.despesaRepository.save(despesaID);
+        return DespesaResponseDTO.fromDespesa(despesaID);
+    }
 
     public List<DespesaResponseDTO> listarTodasDespesas()
     {
@@ -188,6 +197,36 @@ public class DespesaService {
             throw new DespesaCanceladaException();
         }
     }
+
+    private void calcularSaldo(Despesa despesa)
+    {
+        Participante pagador = despesa.getPagador();
+
+        List<Saldo> saldos = new ArrayList<>();
+
+        for(Divisao divisao : despesa.getDivisoes())
+        {
+            Participante participante = divisao.getParticipante();
+            BigDecimal valorDivisao = divisao.getValor();
+
+            //Pagador não cobrar de si mesmo
+            if(participante.getId().equals(pagador.getId()))
+            {
+                continue;
+            }
+
+            Saldo saldo = new Saldo();
+
+            saldo.setValor(valorDivisao);
+            saldo.setDevedor(participante);
+            saldo.setCredor(pagador);
+
+            saldos.add(saldo);
+        }
+
+        saldoRepository.saveAll(saldos);
+    }
+
 
     private void AplicarDivisaoIgual(Despesa despesa, List<Participante> participantes)
     {
