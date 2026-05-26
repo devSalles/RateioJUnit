@@ -177,6 +177,17 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
+    public DespesaResponseDTO cancelarDespesa(Long idDespesa)
+    {
+        Despesa despesa = buscarID(idDespesa);
+
+        if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
+        {
+            throw new DespesaCanceladaException();
+        }
+
+    }
+
     // --------------- METODOS AUXILIARES ---------------
 
     public Despesa buscarID(Long idDespesa)
