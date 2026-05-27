@@ -181,11 +181,13 @@ public class DespesaService {
     {
         Despesa despesa = buscarID(idDespesa);
 
-        if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
-        {
-            throw new DespesaCanceladaException();
-        }
+        validarFinalizacaoDespesa(despesa);
+        
 
+        despesa.setStatusDespesa(StatusDespesa.CANCELADA);
+
+        this.despesaRepository.save(despesa);
+        return DespesaResponseDTO.fromDespesa(despesa);
     }
 
     // --------------- METODOS AUXILIARES ---------------
