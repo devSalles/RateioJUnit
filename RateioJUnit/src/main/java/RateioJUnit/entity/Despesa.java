@@ -48,4 +48,7 @@ public class Despesa {
 
     @OneToMany(mappedBy = "despesa",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Divisao> divisoes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "despesa",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Saldo> saldo = new ArrayList<>();
 }

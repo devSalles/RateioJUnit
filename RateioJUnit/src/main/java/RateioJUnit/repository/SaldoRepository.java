@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SaldoRepository  extends JpaRepository<Saldo, Long> {
+
+    void deleteAllDespesa(Despesa despesa);
 }

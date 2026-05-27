@@ -29,4 +29,8 @@ public class Saldo {
     @ManyToOne
     @JoinColumn(name = "credor_id",nullable = false)
     private Participante credor;
+
+    @ManyToOne
+    @JoinColumn(name = "despesa_id")
+    private Despesa despesa;
 }
