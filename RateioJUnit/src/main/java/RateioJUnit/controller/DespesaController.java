@@ -38,6 +38,11 @@ public class DespesaController {
         return ResponseEntity.ok(despesaService.finalizacaoDespesa(id));
     }
 
+    @PutMapping("/cancelar-despesa/{id}")
+    public ResponseEntity<DespesaResponseDTO> cancelarDespesa(@PathVariable Long id) {
+        return ResponseEntity.ok(despesaService.cancelarDespesa(id));
+    }
+
     @GetMapping("/buscar-todas-despesa")
     public ResponseEntity<List<DespesaResponseDTO>> listarTodasDespesas() {
         return ResponseEntity.ok(despesaService.listarTodasDespesas());
