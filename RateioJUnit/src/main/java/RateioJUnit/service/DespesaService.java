@@ -23,7 +23,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -171,18 +174,33 @@ public class DespesaService {
         return despesaTipoDivisao.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
+    public List<DespesaResponseDTO>  buscarEntreDatas(LocalDate dataInicial, LocalDate dataFinal)
+    {
+        if(dataFinal.isAfter(dataInicial))
+        {
+
+        }
+
+        LocalDateTime dataInicialFormatada = dataFinal.atStartOfDay();
+        LocalDateTime dataFinalFormatada = dataInicialFormatada.at;
+
+        List<Despesa> despesasDatas = this.despesaRepository.findByDataCriacaoBetween(dataInicial, dataFinal);
+    }
+
     public DespesaResponseDTO buscarDespesaPorId(Long idDespesa)
     {
         Despesa despesa = buscarID(idDespesa);
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
+    @Transactional
     public DespesaResponseDTO cancelarDespesa(Long idDespesa)
     {
         Despesa despesa = buscarID(idDespesa);
 
         validarFinalizacaoDespesa(despesa);
-        
+
+        removeSaldo(despesa);
 
         despesa.setStatusDespesa(StatusDespesa.CANCELADA);
 
@@ -208,6 +226,17 @@ public class DespesaService {
         if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
         {
             throw new DespesaCanceladaException();
+        }
+    }
+
+    private void removeSaldo(Despesa despesa)
+    {
+        for(Divisao divisao: despesa.getDivisoes())
+        {
+            Participante participante = divisao.getParticipante();
+
+            participante.getSaldoCredor().removeIf(saldo->saldo.getDespesa().getId().equals(despesa.getId()));
+            participante.getSaldoDevedor().removeIf(saldo -> saldo.getDespesa().getId().equals(despesa.getId()));
         }
     }
 
