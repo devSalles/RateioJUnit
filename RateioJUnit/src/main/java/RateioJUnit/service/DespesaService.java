@@ -19,12 +19,14 @@ import RateioJUnit.repository.ParticipanteRepository;
 import RateioJUnit.repository.SaldoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.web.ReactiveSortHandlerMethodArgumentResolver;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -176,15 +178,22 @@ public class DespesaService {
 
     public List<DespesaResponseDTO>  buscarEntreDatas(LocalDate dataInicial, LocalDate dataFinal)
     {
-        if(dataFinal.isAfter(dataInicial))
+        if(dataFinal.isBefore(dataInicial))
         {
-
+            throw new DataExcpetion();
         }
 
-        LocalDateTime dataInicialFormatada = dataFinal.atStartOfDay();
-        LocalDateTime dataFinalFormatada = dataInicialFormatada.at;
+        LocalDateTime dataInicialFormatada = dataInicial.atStartOfDay();
+        LocalDateTime dataFinalFormatada = dataFinal.atTime(LocalTime.MAX);
 
-        List<Despesa> despesasDatas = this.despesaRepository.findByDataCriacaoBetween(dataInicial, dataFinal);
+        List<Despesa> despesasDatas = this.despesaRepository.findByDataCriacaoBetween(dataInicialFormatada, dataFinalFormatada);
+
+        if(despesasDatas.isEmpty())
+        {
+            throw new NenhumRegistroException("Nenhum registro foi encontrado com essas datas");
+        }
+
+        return despesasDatas.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
     public DespesaResponseDTO buscarDespesaPorId(Long idDespesa)
