@@ -9,9 +9,12 @@ import RateioJUnit.service.DespesaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -57,6 +60,15 @@ public class DespesaController {
     public ResponseEntity<List<DespesaResponseDTO>> listarDespesaPorStatus(
             @RequestParam StatusDespesa statusDespesa) {
         return ResponseEntity.ok(despesaService.listarDespesaPorStatus(statusDespesa));
+    }
+
+    @GetMapping("/buscar-despesa-por-data")
+    public ResponseEntity<?> buscarDespesaPorData(
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate inicio,
+            @RequestParam("fim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate fim
+    )
+    {
+        return ResponseEntity.ok(this.despesaService.buscarEntreDatas(inicio, fim));
     }
 
     @GetMapping("/buscar-despesa-por-tipo-divisao")

@@ -136,4 +136,11 @@ public class HandlerException {
         MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
     }
+
+    @ExceptionHandler(DataExcpetion.class)
+    public ResponseEntity<MessageRestError> DataExcpetion(DataExcpetion ex)
+    {
+        MessageRestError messageRestError = new MessageRestError(HttpStatus.CONFLICT,ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageRestError);
+    }
 }
