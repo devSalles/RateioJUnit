@@ -1,5 +1,7 @@
 package RateioJUnit.service;
 
+import RateioJUnit.core.exception.NenhumRegistroException;
+import RateioJUnit.dto.saldo.SaldoResponseDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
@@ -16,7 +18,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SaldoService {
 
+    private final ParticipanteService participanteService;
     private final SaldoRepository saldoRepository;
+
+    public List<SaldoResponseDTO> listarTodosOsSaldos(Long idSaldo)
+    {
+        List<Saldo> saldos = saldoRepository.findAll();
+
+        if(saldos.isEmpty())
+        {
+            throw new NenhumRegistroException("Nenhum registro foi encontrado");
+        }
+
+        return saldos.stream().map(SaldoResponseDTO::fromSaldo).toList();
+    }
+
+    public List<SaldoResponseDTO> listarPorParticipante(Long idParticipante)
+    {
+        participanteService.buscarID(idParticipante);
+
+        List<Saldo> saldos = this.saldoRepository.findByCredorIdOrDevedorId(idParticipante, idParticipante);
+        if(saldos.isEmpty())
+        {
+            throw new NenhumRegistroException("Nenhum registro foi encontrado");
+        }
+
+        return saldos.stream().map(SaldoResponseDTO::fromSaldo).toList();
+    }
+
+    public List<SaldoResponseDTO> listarPor
 
     public void calcularSaldo(Despesa despesa)
     {
