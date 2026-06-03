@@ -1,7 +1,6 @@
 package RateioJUnit.service;
 
 import RateioJUnit.core.exception.participante.ParticipanteInvalidoException;
-import RateioJUnit.entity.Saldo;
 import RateioJUnit.enums.StatusDespesa;
 import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.core.exception.IdNaoEncontradoException;
@@ -16,19 +15,15 @@ import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
 import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
-import RateioJUnit.repository.SaldoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.web.ReactiveSortHandlerMethodArgumentResolver;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,7 +34,7 @@ public class DespesaService {
     private final DespesaRepository despesaRepository;
     private final ParticipanteService participanteService;
     private final ParticipanteRepository participanteRepository;
-    private final SaldoRepository saldoRepository;
+    private final SaldoService saldoService;
 
 
     @Transactional
@@ -133,7 +128,7 @@ public class DespesaService {
         Despesa despesaID = buscarID(idDespesa);
 
         validarFinalizacaoDespesa(despesaID);
-        calcularSaldo(despesaID);
+        saldoService.calcularSaldo(despesaID);
         despesaID.setStatusDespesa(StatusDespesa.FINALIZADA);
 
         this.despesaRepository.save(despesaID);
@@ -209,7 +204,7 @@ public class DespesaService {
 
         validarFinalizacaoDespesa(despesa);
 
-        removeSaldo(despesa);
+        saldoService.removeSaldo(despesa);
 
         despesa.setStatusDespesa(StatusDespesa.CANCELADA);
 
@@ -237,47 +232,6 @@ public class DespesaService {
             throw new DespesaCanceladaException();
         }
     }
-
-    private void removeSaldo(Despesa despesa)
-    {
-        for(Divisao divisao: despesa.getDivisoes())
-        {
-            Participante participante = divisao.getParticipante();
-
-            participante.getSaldoCredor().removeIf(saldo->saldo.getDespesa().getId().equals(despesa.getId()));
-            participante.getSaldoDevedor().removeIf(saldo -> saldo.getDespesa().getId().equals(despesa.getId()));
-        }
-    }
-
-    private void calcularSaldo(Despesa despesa)
-    {
-        Participante pagador = despesa.getPagador();
-
-        List<Saldo> saldos = new ArrayList<>();
-
-        for(Divisao divisao : despesa.getDivisoes())
-        {
-            Participante participante = divisao.getParticipante();
-            BigDecimal valorDivisao = divisao.getValor();
-
-            //Pagador não cobrar de si mesmo
-            if(participante.getId().equals(pagador.getId()))
-            {
-                continue;
-            }
-
-            Saldo saldo = new Saldo();
-
-            saldo.setValor(valorDivisao);
-            saldo.setDevedor(participante);
-            saldo.setCredor(pagador);
-
-            saldos.add(saldo);
-        }
-
-        saldoRepository.saveAll(saldos);
-    }
-
 
     private void AplicarDivisaoIgual(Despesa despesa, List<Participante> participantes)
     {
