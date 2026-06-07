@@ -212,7 +212,7 @@ public class DespesaService {
         return DespesaResponseDTO.fromDespesa(despesa);
     }
 
-    // --------------- METODOS AUXILIARES ---------------
+    //-------------- METODOS AUXILIARES --------------
 
     public Despesa buscarID(Long idDespesa)
     {

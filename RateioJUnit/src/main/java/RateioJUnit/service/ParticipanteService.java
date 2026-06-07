@@ -20,7 +20,6 @@ public class ParticipanteService {
 
     private final ParticipanteRepository participanteRepository;
 
-
     public ParticipanteResponseDTO salvarParticipante(ParticipanteResquestDTO participanteResquestDTO)
     {
         if(this.participanteRepository.existsByEmail(participanteResquestDTO.email()))
@@ -95,7 +94,7 @@ public class ParticipanteService {
         return ParticipanteResponseDTO.fromParticipante(participante);
     }
 
-    //------------- Metodos Auxiliares -------------
+    //-------------- METODOS AUXILIARES --------------
 
     public Participante buscarID(Long idParticipante){
         return this.participanteRepository.findById(idParticipante)
