@@ -55,7 +55,7 @@ public class SaldoService {
         BigDecimal totalReceber = this.saldoRepository.findByDevedorId(idUsuario).stream().map(Saldo::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
         BigDecimal totalDever = this.saldoRepository.findByCredorId(idUsuario).stream().map(Saldo::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
 
-        return  new ResumoSaldoTotalResponseDTO(totalReceber,totalDever);
+        return new ResumoSaldoTotalResponseDTO(totalReceber,totalDever);
     }
 
 
