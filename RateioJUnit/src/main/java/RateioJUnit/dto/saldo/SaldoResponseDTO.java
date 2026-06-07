@@ -1,12 +1,10 @@
 package RateioJUnit.dto.saldo;
 
-import RateioJUnit.entity.Participante;
 import RateioJUnit.entity.Saldo;
 
 import java.math.BigDecimal;
 
 public record SaldoResponseDTO(
-
         Long id,
         BigDecimal valor,
         Long idCredor,
