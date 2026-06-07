@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface SaldoRepository  extends JpaRepository<Saldo, Long> {
 
-    List<Saldo> findByCredor(Long idCredor);
+    List<Saldo> findByCredorId(Long idCredor);
 
-    List<Saldo> findByDevedor(Long idDevedor);
+    List<Saldo> findByDevedorId(Long idDevedor);
 
     List<Saldo> findByCredorIdOrDevedorId(Long idCredor, Long idDevedor);
 
