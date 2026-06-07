@@ -1,7 +1,9 @@
 package RateioJUnit.service;
 
 import RateioJUnit.core.exception.NenhumRegistroException;
+import RateioJUnit.dto.saldo.ResumoSaldoTotalResponseDTO;
 import RateioJUnit.dto.saldo.SaldoResponseDTO;
+import RateioJUnit.dto.saldo.SaldoTotalEntreParticipantesResponseDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
@@ -21,7 +23,7 @@ public class SaldoService {
     private final ParticipanteService participanteService;
     private final SaldoRepository saldoRepository;
 
-    public List<SaldoResponseDTO> listarTodosOsSaldos(Long idSaldo)
+    public List<SaldoResponseDTO> listarTodosOsSaldos()
     {
         List<Saldo> saldos = saldoRepository.findAll();
 
@@ -46,8 +48,31 @@ public class SaldoService {
         return saldos.stream().map(SaldoResponseDTO::fromSaldo).toList();
     }
 
-    public List<SaldoResponseDTO> listarPor
+    public ResumoSaldoTotalResponseDTO saldoTotalUsuario(Long idUsuario)
+    {
+        participanteService.buscarID(idUsuario);
 
+        BigDecimal totalReceber = this.saldoRepository.findByDevedorId(idUsuario).stream().map(Saldo::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
+        BigDecimal totalDever = this.saldoRepository.findByCredorId(idUsuario).stream().map(Saldo::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
+
+        return  new ResumoSaldoTotalResponseDTO(totalReceber,totalDever);
+    }
+
+
+    public SaldoTotalEntreParticipantesResponseDTO saldoTotalEntreParticipante(Long idDevedor, Long idCredor)
+    {
+        Participante credor = participanteService.buscarID(idCredor);
+        Participante devedor = participanteService.buscarID(idDevedor);
+
+        BigDecimal saldoTotal = this.saldoRepository.findByCredorIdAndDevedorId(idDevedor,idCredor)
+                .stream().map(Saldo::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
+
+        return new SaldoTotalEntreParticipantesResponseDTO(credor.getId(), credor.getNome(), devedor.getId(), devedor.getNome(), saldoTotal);
+    }
+
+    //-------------- METODOS AUXILIARES --------------
+
+    //Metodo utilizando no service de despesa para finalizar uma despesa
     public void calcularSaldo(Despesa despesa)
     {
         Participante pagador = despesa.getPagador();
@@ -70,6 +95,7 @@ public class SaldoService {
             saldo.setValor(valorDivisao);
             saldo.setDevedor(participante);
             saldo.setCredor(pagador);
+            saldo.setDespesa(despesa);
 
             saldos.add(saldo);
         }
@@ -77,6 +103,7 @@ public class SaldoService {
         saldoRepository.saveAll(saldos);
     }
 
+    //Metodo utilizando no service de despesa para remoção de despesa
     public void removeSaldo(Despesa despesa)
     {
         for(Divisao divisao: despesa.getDivisoes())
