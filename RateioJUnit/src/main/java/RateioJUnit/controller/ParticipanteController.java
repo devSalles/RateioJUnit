@@ -6,6 +6,7 @@ import RateioJUnit.service.ParticipanteService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,37 +20,44 @@ public class ParticipanteController {
     private final ParticipanteService participanteService;
 
     @PostMapping("/adicionar-participante")
-    public ParticipanteResponseDTO salvarParticipante(@Valid @RequestBody ParticipanteResquestDTO dto) {
-        return participanteService.salvarParticipante(dto);
+    public ResponseEntity<ParticipanteResponseDTO> salvarParticipante(@Valid @RequestBody ParticipanteResquestDTO dto) {
+
+        return ResponseEntity.ok(participanteService.salvarParticipante(dto));
     }
 
     @PutMapping("/atualizar-participante/{idParticipante}")
-    public ParticipanteResponseDTO atualizarParticipante(@PathVariable Long idParticipante,@Valid @RequestBody ParticipanteResquestDTO dto) {
-        return participanteService.atualizarParticipante(idParticipante, dto);
+    public ResponseEntity<ParticipanteResponseDTO> atualizarParticipante(@PathVariable Long idParticipante, @Valid @RequestBody ParticipanteResquestDTO dto) {
+
+        return ResponseEntity.ok(participanteService.atualizarParticipante(idParticipante, dto));
     }
 
     @GetMapping("/buscar-detalhes/{idParticipante}")
-    public ParticipanteResponseDTO buscarIDParticipante(@PathVariable Long idParticipante) {
-        return participanteService.buscarIDParticipante(idParticipante);
+    public ResponseEntity<ParticipanteResponseDTO> buscarIDParticipante(@PathVariable Long idParticipante) {
+
+        return ResponseEntity.ok(participanteService.buscarIDParticipante(idParticipante));
     }
 
     @GetMapping("/buscar-todos-participantes")
-    public List<ParticipanteResponseDTO> buscarTodosParticipantes() {
-        return participanteService.buscarTodosParticipantes();
+    public ResponseEntity<List<ParticipanteResponseDTO>> buscarTodosParticipantes() {
+
+        return ResponseEntity.ok(participanteService.buscarTodosParticipantes());
     }
 
     @GetMapping("/buscar-por-email")
-    public ParticipanteResponseDTO buscarPorEmail(@RequestParam String email) {
-        return participanteService.buscarPorEmail(email);
+    public ResponseEntity<ParticipanteResponseDTO> buscarPorEmail(@RequestParam String email) {
+
+        return ResponseEntity.ok(participanteService.buscarPorEmail(email));
     }
 
     @GetMapping("/buscar-por-nome")
-    public List<ParticipanteResponseDTO> buscarPorNome(@RequestParam String nomeParticipante) {
-        return participanteService.buscarPorNome(nomeParticipante);
+    public ResponseEntity<List<ParticipanteResponseDTO>> buscarPorNome(@RequestParam String nomeParticipante) {
+
+        return ResponseEntity.ok(participanteService.buscarPorNome(nomeParticipante));
     }
 
     @DeleteMapping("/deletar-participante/{idParticipante}")
-    public ParticipanteResponseDTO deletarParticipante(@PathVariable Long idParticipante) {
-        return participanteService.deletarParticipante(idParticipante);
+    public ResponseEntity<ParticipanteResponseDTO> deletarParticipante(@PathVariable Long idParticipante) {
+
+        return ResponseEntity.ok(participanteService.deletarParticipante(idParticipante));
     }
 }
