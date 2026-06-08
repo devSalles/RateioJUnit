@@ -171,7 +171,7 @@ public class DespesaService {
         return despesaTipoDivisao.stream().map(DespesaResponseDTO::fromDespesa).toList();
     }
 
-    public List<DespesaResponseDTO>  buscarEntreDatas(LocalDate dataInicial, LocalDate dataFinal)
+    public List<DespesaResponseDTO> buscarEntreDatas(LocalDate dataInicial, LocalDate dataFinal)
     {
         if(dataFinal.isBefore(dataInicial))
         {
