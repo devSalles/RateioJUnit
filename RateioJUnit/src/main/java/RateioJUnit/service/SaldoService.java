@@ -67,7 +67,7 @@ public class SaldoService {
         Participante credor = participanteService.buscarID(idCredor);
         Participante devedor = participanteService.buscarID(idDevedor);
 
-        BigDecimal saldoTotal = this.saldoRepository.findByCredorIdAndDevedorId(idDevedor,idCredor)
+        BigDecimal saldoTotal = this.saldoRepository.findByCredorIdAndDevedorId(idCredor,idDevedor)
                 .stream().map(Saldo::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
 
         return new SaldoTotalEntreParticipantesResponseDTO(credor.getId(), credor.getNome(), devedor.getId(), devedor.getNome(), saldoTotal);
