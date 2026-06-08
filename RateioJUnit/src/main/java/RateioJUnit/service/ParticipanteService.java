@@ -37,7 +37,8 @@ public class ParticipanteService {
     {
         Participante participante = buscarID(idParticipante);
 
-        if(!participante.getEmail().equals(participanteDTO.email()) && this.participanteRepository.existsByEmail(participanteDTO.email()))
+        boolean existeEmail = this.participanteRepository.existsByEmailAndIdNot(participanteDTO.email(),idParticipante);
+        if(existeEmail)
         {
             throw new EmailRepetidoCadastradoException();
         }

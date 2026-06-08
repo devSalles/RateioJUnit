@@ -26,4 +26,6 @@ public interface ParticipanteRepository extends JpaRepository<Participante, Long
 
     //Verifica se possui crédito
     boolean existsByIdAndSaldoCredorIsNotEmpty(Long idParticipante);
+
+    boolean existsByEmailAndIdNot(String emailParticipante,Long idParticipante);
 }
