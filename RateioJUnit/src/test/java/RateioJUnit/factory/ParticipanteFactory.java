@@ -14,4 +14,15 @@ public class ParticipanteFactory {
 
         return  participante;
     }
+
+    public static Participante criarParticipantePersonalizado(Long id, String nome)
+    {
+        Participante participante = new Participante();
+
+        participante.setId(id);
+        participante.setNome(nome);
+        participante.setEmail(nome.toLowerCase().replace(" ","" + "@email.com"));
+
+        return participante;
+    }
 }

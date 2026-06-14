@@ -1,20 +1,25 @@
 package RateioJUnit.factory;
 
 import RateioJUnit.entity.Despesa;
+import RateioJUnit.entity.Participante;
 import RateioJUnit.enums.StatusDespesa;
-
+import RateioJUnit.enums.TipoDivisao;
 import java.math.BigDecimal;
 
 public class DespesaFactory {
 
-    public static Despesa criarDespesa()
+    public static Despesa criarDespesa(Long id, BigDecimal valorTotal, StatusDespesa statusDespesa, TipoDivisao tipoDivisao)
     {
-        Despesa despesa = new Despesa();
-        despesa.setId(1L);
-        despesa.setValorTotal(new BigDecimal(300));
-        despesa.setStatusDespesa(StatusDespesa.CRIADA);
 
-        
+        Participante participante = ParticipanteFactory.criarParticipantePersonalizado(1L,"Pedro");
+
+        Despesa despesa = new Despesa();
+        despesa.setId(id);
+        despesa.setValorTotal(valorTotal);
+        despesa.setStatusDespesa(statusDespesa);
+        despesa.setTipoDivisao(tipoDivisao);
+        despesa.setPagador(participante);
+
         return despesa;
     }
 }
