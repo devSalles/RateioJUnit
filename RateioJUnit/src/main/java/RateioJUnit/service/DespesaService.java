@@ -30,12 +30,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DespesaService {
 
-
     private final DespesaRepository despesaRepository;
     private final ParticipanteService participanteService;
     private final ParticipanteRepository participanteRepository;
     private final SaldoService saldoService;
-
 
     @Transactional
     public DespesaResponseDTO adicionarDespesa(DespesaRequestDTO despesaRequestDTO)
@@ -202,8 +200,7 @@ public class DespesaService {
     {
         Despesa despesa = buscarID(idDespesa);
 
-        validarFinalizacaoDespesa(despesa);
-
+        validarCancelamentoDespesa(despesa);
         saldoService.removeSaldo(despesa);
 
         despesa.setStatusDespesa(StatusDespesa.CANCELADA);
@@ -230,6 +227,19 @@ public class DespesaService {
         if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
         {
             throw new DespesaCanceladaException();
+        }
+    }
+
+    private void validarCancelamentoDespesa(Despesa despesa)
+    {
+        if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
+        {
+            throw new DespesaCanceladaException("A despesa já foi cancelada");
+        }
+
+        if(despesa.getStatusDespesa() == StatusDespesa.FINALIZADA)
+        {
+            throw new DespesaJaFinalizadaException("A despesa finalizada não pode ser cancelada");
         }
     }
 
