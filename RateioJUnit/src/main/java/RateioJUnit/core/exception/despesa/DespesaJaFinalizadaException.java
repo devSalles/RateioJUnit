@@ -5,6 +5,6 @@ public class DespesaJaFinalizadaException extends RuntimeException {
         super(message);
     }
     public DespesaJaFinalizadaException() {
-        super("Despesa já finalizada não ser finalizada novamente ");
+        super("Despesa finalizada não pode ser cancelada");
     }
 }
