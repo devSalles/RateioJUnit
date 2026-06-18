@@ -1,27 +1,31 @@
 package RateioJUnit.service;
 
-import RateioJUnit.core.exception.despesa.DiferenteValorTotalException;
-import RateioJUnit.core.exception.despesa.PagadorNaoEstaNaListaException;
-import RateioJUnit.core.exception.despesa.ParticipantesDuplicadosException;
+import RateioJUnit.core.exception.despesa.*;
 import RateioJUnit.dto.despesa.DespesaRequestDTO;
 import RateioJUnit.dto.divisao.DivisaoRequestDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Participante;
+import RateioJUnit.enums.StatusDespesa;
 import RateioJUnit.enums.TipoDivisao;
+import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.engine.TestExecutionResult;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -112,5 +116,72 @@ public class DespesaServiceTest {
 
         DespesaRequestDTO despesaRequestDTO = new DespesaRequestDTO("Viagem",new BigDecimal("9000.00"),1L,List.of(d1,d2), TipoDivisao.PERSONALIZADA);
         assertThrows(DiferenteValorTotalException.class,()-> despesaService.adicionarDespesa(despesaRequestDTO));
+    }
+
+    @Test
+    void deveFinalizarDespesa()
+    {
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"), StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        despesaService.finalizacaoDespesa(1L);
+
+        assertEquals(StatusDespesa.FINALIZADA,despesa.getStatusDespesa());
+
+        verify(saldoService).calcularSaldo(despesa);
+    }
+
+    @Test
+    void naoDeveFinalizarDespesaJaFinalizada()
+    {
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("60.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
+    }
+
+    @Test
+    void naoDeveFinalizarDespesaCancelada()
+    {
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("500.00"), StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        assertThrows(DespesaCanceladaException.class,()->despesaService.finalizacaoDespesa(1L));
+    }
+
+    @Test
+    void deveCancelarDespesa()
+    {
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10000.00"), StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        despesaService.cancelarDespesa(1L);
+
+        assertEquals(StatusDespesa.CANCELADA,despesa.getStatusDespesa());
+
+        verify(saldoService).removeSaldo(despesa);
+    }
+
+    @Test
+    void naoDeveCancelarDespesaFinalizada()
+    {
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("1500.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoDataFinalMenorQueDataInicial()
+    {
+        LocalDate dataInicial = LocalDate.of(2026,1,10);
+        LocalDate dataFinal = LocalDate.of(2025,5,30);
+
+        assertThrows(DataExcpetion.class,()->despesaService.buscarEntreDatas(dataInicial,dataFinal));
     }
 }
