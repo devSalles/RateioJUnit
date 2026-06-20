@@ -13,15 +13,12 @@ import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.engine.TestExecutionResult;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +59,8 @@ public class DespesaServiceTest {
         DivisaoRequestDTO d1 = new DivisaoRequestDTO(1L,new BigDecimal("50.00"));
         DivisaoRequestDTO d2 = new DivisaoRequestDTO(2L, new BigDecimal("50.00"));
 
-        DespesaRequestDTO despesaRequestDTO = new DespesaRequestDTO("Pizza",new BigDecimal("100.00"),1L, List.of(d1,d2), TipoDivisao.PERSONALIZADA);
+        DespesaRequestDTO despesaRequestDTO =
+                new DespesaRequestDTO("Pizza",new BigDecimal("100.00"),1L, List.of(d1,d2), TipoDivisao.PERSONALIZADA);
 
         despesaService.adicionarDespesa(despesaRequestDTO);
 
@@ -95,7 +93,8 @@ public class DespesaServiceTest {
 
         DivisaoRequestDTO d1 = new DivisaoRequestDTO(1L,new BigDecimal("1000.00"));
 
-        DespesaRequestDTO despesaRequestDTO = new DespesaRequestDTO("Compra telefone",new BigDecimal("2000.00"),1L,List.of(d1,d1), TipoDivisao.PERSONALIZADA);
+        DespesaRequestDTO despesaRequestDTO =
+                new DespesaRequestDTO("Compra telefone",new BigDecimal("2000.00"),1L,List.of(d1,d1), TipoDivisao.PERSONALIZADA);
 
         assertThrows(ParticipantesDuplicadosException.class, () -> despesaService.adicionarDespesa(despesaRequestDTO));
     }
@@ -114,7 +113,9 @@ public class DespesaServiceTest {
         DivisaoRequestDTO d1 = new DivisaoRequestDTO(1L,new BigDecimal("5000.00"));
         DivisaoRequestDTO d2 = new DivisaoRequestDTO(2L,new BigDecimal("3000.00"));
 
-        DespesaRequestDTO despesaRequestDTO = new DespesaRequestDTO("Viagem",new BigDecimal("9000.00"),1L,List.of(d1,d2), TipoDivisao.PERSONALIZADA);
+        DespesaRequestDTO despesaRequestDTO =
+                new DespesaRequestDTO("Viagem",new BigDecimal("9000.00"),1L,List.of(d1,d2), TipoDivisao.PERSONALIZADA);
+        
         assertThrows(DiferenteValorTotalException.class,()-> despesaService.adicionarDespesa(despesaRequestDTO));
     }
 
