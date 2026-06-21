@@ -91,5 +91,45 @@ public class ParticipanteServiceTest {
 
         verify(participanteRepository,never()).save(any(Participante.class));
     }
-    
+    @Test
+    void deveLancarExcecaoQuandoParticipanteNaoExistir()
+    {
+        Long idParticipante = 99L;
+
+        ParticipanteResquestDTO requestDTO = new ParticipanteResquestDTO("bernardo","bernardo@gmail.com");
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
+
+        assertThrows(IdNaoEncontradoException.class,()->participanteService.atualizarParticipante(idParticipante,requestDTO));
+
+        verify(participanteRepository,never()).save(any());
+    }
+
+    // --- METODOS DE BUSCAR ID ---
+
+    @Test
+    void deveBuscarOParticipantePorID()
+    {
+        Long idParticipante = 1L;
+
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
+
+        ParticipanteResponseDTO response = participanteService.buscarIDParticipante(idParticipante);
+        assertNotNull(response);
+        assertEquals(participante.getId(),response.id());
+        assertEquals(participante.getNome(),response.nome());
+        assertEquals(participante.getEmail(),response.email());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoParticipanteNaoEncontrado()
+    {
+        Long idParticipante = 99L;
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
+
+        assertThrows(IdNaoEncontradoException.class,()->participanteService.buscarID(idParticipante));
+    }
 }
