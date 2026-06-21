@@ -46,6 +46,8 @@ public class DespesaServiceTest {
     @InjectMocks
     DespesaService despesaService;
 
+    // --- METODOS DE ADICIONAR DESPESA ---
+
     @Test
     void deveAdicionarDespesa()
     {
@@ -115,9 +117,11 @@ public class DespesaServiceTest {
 
         DespesaRequestDTO despesaRequestDTO =
                 new DespesaRequestDTO("Viagem",new BigDecimal("9000.00"),1L,List.of(d1,d2), TipoDivisao.PERSONALIZADA);
-        
+
         assertThrows(DiferenteValorTotalException.class,()-> despesaService.adicionarDespesa(despesaRequestDTO));
     }
+
+    // --- METODOS DE FINALIZAR DESPESA ---
 
     @Test
     void deveFinalizarDespesa()
@@ -153,6 +157,8 @@ public class DespesaServiceTest {
         assertThrows(DespesaCanceladaException.class,()->despesaService.finalizacaoDespesa(1L));
     }
 
+    // ---METODOS DE CANCELAR DESPESA ---
+
     @Test
     void deveCancelarDespesa()
     {
@@ -176,6 +182,8 @@ public class DespesaServiceTest {
 
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
     }
+
+    // --- METODO DE BUSCA ENTRE DATAS ---
 
     @Test
     void deveLancarExcecaoQuandoDataFinalMenorQueDataInicial()
