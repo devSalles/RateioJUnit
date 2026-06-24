@@ -224,6 +224,35 @@ public class ParticipanteServiceTest {
         assertThrows(NomeNaoEncontradoException.class,()->participanteService.buscarPorNome(nomeParticipante));
     }
 
+    // --- METODO DE DELEÇÃO DE PARTICIPANTE ---
+
+    @Test
+    void deveDeletarParticipante()
+    {
+        Long idParticipante = 1L;
+        Participante participante = ParticipanteFactory.criarParticipante();
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
+
+        when(participanteRepository.existsByIdAndDespesasPagasIsNotEmpty(idParticipante)).thenReturn(false);
+        when(participanteRepository.existsByIdAndSaldoDevedorIsNotEmpty(idParticipante)).thenReturn(false);
+        when(participanteRepository.existsByIdAndSaldoCredorIsNotEmpty(idParticipante)).thenReturn(false);
+
+        ParticipanteResponseDTO resposeDTO = this.participanteService.deletarParticipante(idParticipante);
+        assertNotNull(resposeDTO);
+
+        verify(participanteRepository).delete(participante);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoIdParticipanteNaoEncontrado()
+    {
+        Long idParticipante = 1L;
+
+        when(this.participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
+
+        assertThrows(IdNaoEncontradoException.class,()->participanteService.deletarParticipante(idParticipante));
+    }
+
     // --- METODO AUXILIAR ---
 
     void validarParticipante(Participante participante, ParticipanteResponseDTO responseDTO)
