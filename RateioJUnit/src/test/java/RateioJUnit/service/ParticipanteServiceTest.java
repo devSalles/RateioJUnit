@@ -2,7 +2,10 @@ package RateioJUnit.service;
 
 
 import RateioJUnit.core.exception.IdNaoEncontradoException;
+import RateioJUnit.core.exception.NenhumRegistroException;
+import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
 import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
+import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
 import RateioJUnit.dto.usuario.ParticipanteResponseDTO;
 import RateioJUnit.dto.usuario.ParticipanteResquestDTO;
 import RateioJUnit.entity.Participante;
@@ -14,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -116,11 +120,8 @@ public class ParticipanteServiceTest {
 
         when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
 
-        ParticipanteResponseDTO response = participanteService.buscarIDParticipante(idParticipante);
-        assertNotNull(response);
-        assertEquals(participante.getId(),response.id());
-        assertEquals(participante.getNome(),response.nome());
-        assertEquals(participante.getEmail(),response.email());
+        ParticipanteResponseDTO participanteResponse = participanteService.buscarIDParticipante(idParticipante);
+        validarParticipante(participante,participanteResponse);
     }
 
     @Test
@@ -132,4 +133,37 @@ public class ParticipanteServiceTest {
 
         assertThrows(IdNaoEncontradoException.class,()->participanteService.buscarID(idParticipante));
     }
+
+    // --- METODO DE BUSCAR TODOS OS PARTICIPANTES ---
+
+    @Test
+    void buscarTodosOsParticipantes()
+    {
+        Participante participanteUm = ParticipanteFactory.criarParticipantePersonalizado(1L,"Mariana");
+        Participante participanteDois = ParticipanteFactory.criarParticipantePersonalizado(2L,"Carla");
+
+        when(this.participanteRepository.findAll()).thenReturn(List.of(participanteUm,participanteDois));
+
+        List<ParticipanteResponseDTO> participanteResponse = this.participanteService.buscarTodosParticipantes();
+        assertNotNull(participanteResponse);
+
+        assertEquals(2,participanteResponse.size());
+
+        assertEquals("Mariana", participanteResponse.get(0).nome());
+        assertEquals("Carla",participanteResponse.get(1).nome());
+
+        verify(participanteRepository).findAll();
+    }
+
+    @Test
+    void deveLancarExcecaoCasoListaDeParticipantesVazias()
+    {
+        when(participanteRepository.findAll()).thenReturn(List.of());
+
+        assertThrows(NenhumRegistroException.class,()->participanteService.buscarTodosParticipantes());
+
+        verify(participanteRepository).findAll();
+    }
+
+    
 }
