@@ -189,6 +189,41 @@ public class ParticipanteServiceTest {
         assertThrows(EmailNaoEncontradoException.class,()->participanteService.buscarPorEmail(emailParticipante));
     }
 
+    // --- METODO BUSCAR PARTICIPANTE POR NOME
+
+    @Test
+    void deveBuscarParticpantePorNome()
+    {
+        String nomeParticipante = "Bernardo";
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteRepository.findByNome(nomeParticipante)).thenReturn(List.of(participante));
+
+        List<ParticipanteResponseDTO>participanteResponse = this.participanteService.buscarPorNome(nomeParticipante);
+        assertNotNull(participanteResponse);
+        assertEquals(1,participanteResponse.size());
+
+        ParticipanteResponseDTO responseDTO = participanteResponse.getFirst();
+
+        assertAll(()->assertNotNull(responseDTO),
+                ()->assertEquals(participante.getId(),responseDTO.id()),
+                ()->assertEquals(participante.getNome(),responseDTO.nome()),
+                ()->assertEquals(participante.getEmail(),responseDTO.email())
+        );
+
+        verify(participanteRepository).findByNome(nomeParticipante);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoNomeNaoEncontrado()
+    {
+        String nomeParticipante = "Bernardo";
+
+        when(this.participanteRepository.findByNome(nomeParticipante)).thenReturn(List.of());
+
+        assertThrows(NomeNaoEncontradoException.class,()->participanteService.buscarPorNome(nomeParticipante));
+    }
+
     // --- METODO AUXILIAR ---
 
     void validarParticipante(Participante participante, ParticipanteResponseDTO responseDTO)
