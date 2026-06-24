@@ -165,5 +165,39 @@ public class ParticipanteServiceTest {
         verify(participanteRepository).findAll();
     }
 
-    
+    // --- METODO BUSCAR POR EMAIL ---
+
+    @Test
+    void deveBuscarParticipantePorEmail()
+    {
+        String emailParticipante = "bernardo@gmail.com";
+
+        Participante participante = ParticipanteFactory.criarParticipante();
+        when(participanteRepository.findByEmail(emailParticipante)).thenReturn(Optional.of(participante));
+
+        ParticipanteResponseDTO participanteResponse = this.participanteService.buscarPorEmail(emailParticipante);
+        validarParticipante(participante,participanteResponse);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoEmailDeParticipanteNaoEncontrado()
+    {
+        String emailParticipante = "email@gmail.com";
+
+        when(this.participanteRepository.findByEmail(emailParticipante)).thenReturn(Optional.empty());
+
+        assertThrows(EmailNaoEncontradoException.class,()->participanteService.buscarPorEmail(emailParticipante));
+    }
+
+    // --- METODO AUXILIAR ---
+
+    void validarParticipante(Participante participante, ParticipanteResponseDTO responseDTO)
+    {
+        assertAll(
+                ()->assertNotNull(responseDTO),
+                ()-> assertEquals(participante.getId(),responseDTO.id()),
+                ()-> assertEquals(participante.getNome(),responseDTO.nome()),
+                ()->assertEquals(participante.getEmail(),responseDTO.email())
+        );
+    }
 }
