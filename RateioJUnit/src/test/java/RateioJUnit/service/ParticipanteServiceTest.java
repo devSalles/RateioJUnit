@@ -1,6 +1,5 @@
 package RateioJUnit.service;
 
-
 import RateioJUnit.core.exception.IdNaoEncontradoException;
 import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
