@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -80,5 +79,59 @@ public class SaldoServiceTest {
         assertThrows(NenhumRegistroException.class,()->this.saldoService.listarTodosOsSaldos());
 
         verify(saldoRepository).findAll();
+    }
+
+    // --- METODO PARA LISTAR SALDO POR USUÁRIO
+
+    @Test
+    void deveRetornarSaldoIndividualPorParticipante()
+    {
+        Long idParticipante = 1L;
+
+        Participante devedor = ParticipanteFactory.criarParticipante();
+        Participante credor = ParticipanteFactory.criarParticipante();
+        Participante participante = ParticipanteFactory.criarParticipante();
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"), StatusDespesa.CRIADA, TipoDivisao.IGUAL);
+
+        Saldo saldoUm = new Saldo();
+        saldoUm.setId(1L);
+        saldoUm.setValor(new BigDecimal("100.00"));
+        saldoUm.setDevedor(devedor);
+        saldoUm.setCredor(credor);
+        saldoUm.setDespesa(despesa);
+
+        Saldo saldoDois = new Saldo();
+        saldoDois.setId(2L);
+        saldoDois.setValor(new BigDecimal("100.00"));
+        saldoDois.setDevedor(devedor);
+        saldoDois.setCredor(credor);
+        saldoDois.setDespesa(despesa);
+
+        when(this.participanteService.buscarID(idParticipante)).thenReturn(participante);
+
+        when(this.saldoRepository.findByCredorIdOrDevedorId(idParticipante,idParticipante)).thenReturn(List.of(saldoUm,saldoDois));
+
+        List<SaldoResponseDTO> response = this.saldoService.listarPorParticipante(idParticipante);
+        assertNotNull(response);
+        assertEquals(2,response.size());
+        assertEquals(new BigDecimal("100.00"),response.getFirst().valor());
+
+        verify(participanteService).buscarID(idParticipante);
+        verify(this.saldoRepository).findByCredorIdOrDevedorId(idParticipante,idParticipante);
+    }
+
+    @Test
+    void deveLancarExcecaoCasoNaotenhaNenhumSaldoSaldo()
+    {
+        Long idParticipante = 1L;
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteService.buscarID(idParticipante)).thenReturn(participante);
+        when(this.saldoRepository.findByCredorIdOrDevedorId(idParticipante,idParticipante)).thenReturn(List.of());
+
+        assertThrows(NenhumRegistroException.class,()->this.saldoService.listarPorParticipante(idParticipante));
+
+        verify(participanteService).buscarID(idParticipante);
+        verify(saldoRepository).findByCredorIdOrDevedorId(idParticipante,idParticipante);
     }
 }
