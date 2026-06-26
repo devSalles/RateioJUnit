@@ -1,6 +1,7 @@
 package RateioJUnit.service;
 
 import RateioJUnit.core.exception.NenhumRegistroException;
+import RateioJUnit.dto.saldo.ResumoSaldoTotalResponseDTO;
 import RateioJUnit.dto.saldo.SaldoResponseDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Participante;
@@ -133,5 +134,59 @@ public class SaldoServiceTest {
 
         verify(participanteService).buscarID(idParticipante);
         verify(saldoRepository).findByCredorIdOrDevedorId(idParticipante,idParticipante);
+    }
+
+    // --- LISTAR SALDO TOTAL POR USUARIO ---
+
+    @Test
+    void deveRetornarOSaldoTotaLDoUsuario()
+    {
+        Long idParticipante = 1L;
+
+        Participante participante = ParticipanteFactory.criarParticipante();
+        when(participanteService.buscarID(idParticipante)).thenReturn(participante);
+
+        Saldo saldoUm = new Saldo();
+        saldoUm.setValor(new BigDecimal("100.00"));
+
+        Saldo saldoDois = new Saldo();
+        saldoDois.setValor(new BigDecimal("50.00"));
+
+        Saldo saldoTres = new Saldo();
+        saldoTres.setValor(new BigDecimal("150.00"));
+
+        Saldo saldoQuatro = new Saldo();
+        saldoQuatro.setValor(new BigDecimal("20.00"));
+
+        when(saldoRepository.findByCredorId(idParticipante)).thenReturn(List.of(saldoUm,saldoDois));
+        when(saldoRepository.findByDevedorId(idParticipante)).thenReturn(List.of(saldoTres,saldoQuatro));
+
+        ResumoSaldoTotalResponseDTO response = saldoService.saldoTotalUsuario(idParticipante);
+        assertNotNull(response);
+
+
+        verify(participanteService).buscarID(idParticipante);
+        verify(saldoRepository).findByCredorId(idParticipante);
+        verify(saldoRepository).findByDevedorId(idParticipante);
+    }
+
+    @Test
+    void deveRetornarZeroQuandoNenhumSaldo()
+    {
+        Long idParticipante = 1L;
+
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteService.buscarID(idParticipante)).thenReturn(participante);
+        when(saldoRepository.findByCredorId(idParticipante)).thenReturn(List.of());
+        when(saldoRepository.findByDevedorId(idParticipante)).thenReturn(List.of());
+
+        ResumoSaldoTotalResponseDTO response = saldoService.saldoTotalUsuario(idParticipante);
+        assertNotNull(response);
+
+        verify(participanteService).buscarID(idParticipante);
+
+        assertEquals(BigDecimal.ZERO,response.totalDever());
+        assertEquals(BigDecimal.ZERO,response.totalReceber());
     }
 }
