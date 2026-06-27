@@ -3,6 +3,7 @@ package RateioJUnit.service;
 import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.dto.saldo.ResumoSaldoTotalResponseDTO;
 import RateioJUnit.dto.saldo.SaldoResponseDTO;
+import RateioJUnit.dto.saldo.SaldoTotalEntreParticipantesResponseDTO;
 import RateioJUnit.entity.Despesa;
 import RateioJUnit.entity.Participante;
 import RateioJUnit.entity.Saldo;
@@ -11,6 +12,7 @@ import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.SaldoRepository;
+import jakarta.servlet.http.Part;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -189,4 +191,48 @@ public class SaldoServiceTest {
         assertEquals(BigDecimal.ZERO,response.totalDever());
         assertEquals(BigDecimal.ZERO,response.totalReceber());
     }
+
+    // --- METODO PARA MOSTRAR SALDO TOTAL ENTRE PARTICIPANTES ---
+
+    @Test
+    void deveExibirSaldoTotalEntreParticipantes()
+    {
+        Long idDevedor = 1L;
+        Long idCredor = 2L;
+
+        Participante credor = ParticipanteFactory.criarParticipante();
+        credor.setId(idCredor);
+        credor.setNome("Juanito");
+
+        Participante devedor = ParticipanteFactory.criarParticipante();
+        devedor.setId(idDevedor);
+        devedor.setNome("Pietro");
+
+        Saldo saldoUm = new Saldo();
+        saldoUm.setValor(new BigDecimal("100.00"));
+
+        Saldo saldoDois = new Saldo();
+        saldoDois.setValor(new BigDecimal("50.00"));
+
+        when(saldoRepository.findByCredorIdAndDevedorId(idCredor,idDevedor)).thenReturn(List.of(saldoUm,saldoDois));
+
+        when(participanteService.buscarID(idCredor)).thenReturn(credor);
+        when(participanteService.buscarID(idDevedor)).thenReturn(devedor);
+
+        SaldoTotalEntreParticipantesResponseDTO response = saldoService.saldoTotalEntreParticipante(idDevedor,idCredor);
+
+        assertNotNull(response);
+        assertEquals(idCredor,response.idCredor());
+        assertEquals("Juanito",response.nomeCredor());
+        assertEquals(idDevedor,response.idDevedor());
+        assertEquals("Pietro",response.nomeDevedor());
+        assertEquals(new BigDecimal("150.00"),response.valorTotal());
+
+        verify(participanteService).buscarID(idDevedor);
+        verify(participanteService).buscarID(idCredor);
+        verify(saldoRepository).findByCredorIdAndDevedorId(idCredor,idDevedor);
+    }
+
+    @Test
+    void deveLancar
 }
