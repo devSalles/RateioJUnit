@@ -16,17 +16,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DespesaServiceTest {
@@ -141,9 +139,7 @@ public class DespesaServiceTest {
     void naoDeveFinalizarDespesaJaFinalizada()
     {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("60.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
-
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
-
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
     }
 
@@ -151,9 +147,7 @@ public class DespesaServiceTest {
     void naoDeveFinalizarDespesaCancelada()
     {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("500.00"), StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
-
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
-
         assertThrows(DespesaCanceladaException.class,()->despesaService.finalizacaoDespesa(1L));
     }
 
@@ -167,7 +161,6 @@ public class DespesaServiceTest {
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
 
         despesaService.cancelarDespesa(1L);
-
         assertEquals(StatusDespesa.CANCELADA,despesa.getStatusDespesa());
 
         verify(saldoService).removeSaldo(despesa);
@@ -177,9 +170,7 @@ public class DespesaServiceTest {
     void naoDeveCancelarDespesaFinalizada()
     {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("1500.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
-
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
-
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
     }
 
@@ -192,5 +183,7 @@ public class DespesaServiceTest {
         LocalDate dataFinal = LocalDate.of(2025,5,30);
 
         assertThrows(DataExcpetion.class,()->despesaService.buscarEntreDatas(dataInicial,dataFinal));
+
+        verify(despesaRepository,never()).findByDataCriacaoBetween(any(LocalDateTime.class),any(LocalDateTime.class));
     }
 }
