@@ -1,5 +1,6 @@
 package RateioJUnit.service;
 
+import RateioJUnit.core.exception.IdNaoEncontradoException;
 import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.dto.saldo.ResumoSaldoTotalResponseDTO;
 import RateioJUnit.dto.saldo.SaldoResponseDTO;
@@ -12,21 +13,17 @@ import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.SaldoRepository;
-import jakarta.servlet.http.Part;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.math.BigDecimal;
 import java.util.List;
-
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SaldoServiceTest {
@@ -68,7 +65,6 @@ public class SaldoServiceTest {
 
         List<SaldoResponseDTO>responseDTO = this.saldoService.listarTodosOsSaldos();
         assertNotNull(responseDTO);
-
         assertEquals(2,responseDTO.size());
 
         verify(this.saldoRepository).findAll();
@@ -111,7 +107,6 @@ public class SaldoServiceTest {
         saldoDois.setDespesa(despesa);
 
         when(this.participanteService.buscarID(idParticipante)).thenReturn(participante);
-
         when(this.saldoRepository.findByCredorIdOrDevedorId(idParticipante,idParticipante)).thenReturn(List.of(saldoUm,saldoDois));
 
         List<SaldoResponseDTO> response = this.saldoService.listarPorParticipante(idParticipante);
@@ -166,7 +161,6 @@ public class SaldoServiceTest {
         ResumoSaldoTotalResponseDTO response = saldoService.saldoTotalUsuario(idParticipante);
         assertNotNull(response);
 
-
         verify(participanteService).buscarID(idParticipante);
         verify(saldoRepository).findByCredorId(idParticipante);
         verify(saldoRepository).findByDevedorId(idParticipante);
@@ -192,6 +186,21 @@ public class SaldoServiceTest {
         assertEquals(BigDecimal.ZERO,response.totalReceber());
     }
 
+    @Test
+    void deveLancarExcecaoQuandoParticipanteNaoExistir()
+    {
+        Long idParticipante = 1L;
+
+        when(participanteService.buscarID(idParticipante)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
+
+        IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->saldoService.saldoTotalUsuario(idParticipante));
+        assertEquals("Participante não encontrado",exception.getMessage());
+
+        verify(participanteService).buscarID(idParticipante);
+        verify(saldoRepository,never()).findByCredorId(anyLong());
+        verify(saldoRepository,never()).findByDevedorId(anyLong());
+    }
+
     // --- METODO PARA MOSTRAR SALDO TOTAL ENTRE PARTICIPANTES ---
 
     @Test
@@ -215,12 +224,10 @@ public class SaldoServiceTest {
         saldoDois.setValor(new BigDecimal("50.00"));
 
         when(saldoRepository.findByCredorIdAndDevedorId(idCredor,idDevedor)).thenReturn(List.of(saldoUm,saldoDois));
-
         when(participanteService.buscarID(idCredor)).thenReturn(credor);
         when(participanteService.buscarID(idDevedor)).thenReturn(devedor);
 
         SaldoTotalEntreParticipantesResponseDTO response = saldoService.saldoTotalEntreParticipante(idDevedor,idCredor);
-
         assertNotNull(response);
         assertEquals(idCredor,response.idCredor());
         assertEquals("Juanito",response.nomeCredor());
@@ -234,5 +241,61 @@ public class SaldoServiceTest {
     }
 
     @Test
-    void deveLancar
+    void deveRetornarZeroQuandoNaoExistiremSaldos()
+    {
+        Long idCredor = 1L;
+        Long idDevedor = 2L;
+
+        Participante credor = ParticipanteFactory.criarParticipante();
+        credor.setId(idCredor);
+        credor.setNome("Juanito");
+
+        Participante devedor = ParticipanteFactory.criarParticipante();
+        devedor.setId(idDevedor);
+        devedor.setNome("Pietro");
+
+        when(participanteService.buscarID(idCredor)).thenReturn(credor);
+        when(participanteService.buscarID(idDevedor)).thenReturn(devedor);
+        when(saldoRepository.findByCredorIdAndDevedorId(idCredor,idDevedor)).thenReturn(List.of());
+
+        SaldoTotalEntreParticipantesResponseDTO response = this.saldoService.saldoTotalEntreParticipante(idDevedor,idCredor);
+
+        assertEquals(BigDecimal.ZERO,response.valorTotal());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCredorNaoExistir()
+    {
+        Long idCredor = 1L;
+        Long idDevedor = 2L;
+
+        when(participanteService.buscarID(idCredor)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
+
+        IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->saldoService.saldoTotalEntreParticipante(idDevedor,idCredor));
+        assertEquals("Participante não encontrado",exception.getMessage());
+
+        verify(participanteService).buscarID(idCredor);
+        verify(saldoRepository,never()).findByCredorIdAndDevedorId(anyLong(),anyLong());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoDevedorNaoExistir()
+    {
+        Long idCredor = 1L;
+        Long idDevedor = 2L;
+
+        Participante credor =  ParticipanteFactory.criarParticipante();
+        credor.setId(idCredor);
+        credor.setNome("Juanito");
+
+        when(participanteService.buscarID(idCredor)).thenReturn(credor);
+        when(participanteService.buscarID(idDevedor)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
+
+        IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->saldoService.saldoTotalEntreParticipante(idDevedor,idCredor));
+        assertEquals("Participante não encontrado",exception.getMessage());
+
+        verify(participanteService).buscarID(idCredor);
+        verify(participanteService).buscarID(idDevedor);
+        verify(saldoRepository,never()).findByCredorIdAndDevedorId(anyLong(),anyLong());
+    }
 }
