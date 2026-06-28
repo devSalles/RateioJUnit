@@ -15,10 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,9 +37,7 @@ public class ParticipanteServiceTest {
     void deveSalvarParticipante()
     {
         ParticipanteResquestDTO participanteResquestDTO = new ParticipanteResquestDTO("Bernardo","sallesbernardo89@gmail.com");
-
         participanteService.salvarParticipante(participanteResquestDTO);
-
         verify(participanteRepository).save(any(Participante.class));
     }
 
@@ -72,7 +68,6 @@ public class ParticipanteServiceTest {
 
         ParticipanteResponseDTO response = participanteService.atualizarParticipante(idParticipante,resquestDTO);
         assertNotNull(response);
-
         assertEquals("bernardo",response.nome());
         assertEquals("bernardo@gmail.com",response.email());
 
@@ -127,9 +122,7 @@ public class ParticipanteServiceTest {
     void deveLancarExcecaoQuandoParticipanteNaoEncontrado()
     {
         Long idParticipante = 99L;
-
         when(participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
-
         assertThrows(IdNaoEncontradoException.class,()->participanteService.buscarID(idParticipante));
     }
 
@@ -158,9 +151,7 @@ public class ParticipanteServiceTest {
     void deveLancarExcecaoCasoListaDeParticipantesVazias()
     {
         when(participanteRepository.findAll()).thenReturn(List.of());
-
         assertThrows(NenhumRegistroException.class,()->participanteService.buscarTodosParticipantes());
-
         verify(participanteRepository).findAll();
     }
 
@@ -182,9 +173,7 @@ public class ParticipanteServiceTest {
     void deveLancarExcecaoQuandoEmailDeParticipanteNaoEncontrado()
     {
         String emailParticipante = "email@gmail.com";
-
         when(this.participanteRepository.findByEmail(emailParticipante)).thenReturn(Optional.empty());
-
         assertThrows(EmailNaoEncontradoException.class,()->participanteService.buscarPorEmail(emailParticipante));
     }
 
@@ -203,7 +192,6 @@ public class ParticipanteServiceTest {
         assertEquals(1,participanteResponse.size());
 
         ParticipanteResponseDTO responseDTO = participanteResponse.getFirst();
-
         assertAll(()->assertNotNull(responseDTO),
                 ()->assertEquals(participante.getId(),responseDTO.id()),
                 ()->assertEquals(participante.getNome(),responseDTO.nome()),
@@ -217,9 +205,7 @@ public class ParticipanteServiceTest {
     void deveLancarExcecaoQuandoNomeNaoEncontrado()
     {
         String nomeParticipante = "Bernardo";
-
         when(this.participanteRepository.findByNome(nomeParticipante)).thenReturn(List.of());
-
         assertThrows(NomeNaoEncontradoException.class,()->participanteService.buscarPorNome(nomeParticipante));
     }
 
@@ -246,9 +232,7 @@ public class ParticipanteServiceTest {
     void deveLancarExcecaoQuandoIdParticipanteNaoEncontrado()
     {
         Long idParticipante = 1L;
-
         when(this.participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
-
         assertThrows(IdNaoEncontradoException.class,()->participanteService.deletarParticipante(idParticipante));
     }
 
