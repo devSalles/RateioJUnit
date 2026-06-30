@@ -108,7 +108,7 @@ public class DespesaService {
         boolean pagadorNaLista = despesaID.getDivisoes()
                 .stream().anyMatch(d -> d.getParticipante().getId().equals(pagador.getId()));
 
-        if (!pagadorNaLista)
+        if(!pagadorNaLista)
         {
             throw new PagadorNaoEstaNaListaException();
         }
@@ -255,7 +255,7 @@ public class DespesaService {
 
         List<Divisao> divisoes = new ArrayList<>();
 
-        for (int i = 0; i < participantes.size(); i++)
+        for(int i = 0; i < participantes.size(); i++)
         {
             BigDecimal valorFinal = valorBase;
 

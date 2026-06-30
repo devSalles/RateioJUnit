@@ -31,7 +31,7 @@ public class ParticipanteServiceTest {
     @InjectMocks
     private ParticipanteService participanteService;
 
-    // ---METODOS DE SALVAR PARTICIPANTE ---
+    // --- SALVAR PARTICIPANTE ---
 
     @Test
     void deveSalvarParticipante()
@@ -53,7 +53,7 @@ public class ParticipanteServiceTest {
         verify(participanteRepository,never()).save(any(Participante.class));
     }
 
-    // ---METODOS DE ATUALIZAR PARTICIPANTE ---
+    // --- ATUALIZAR PARTICIPANTE ---
 
     @Test
     void deveAtualizarParticipante()
@@ -126,7 +126,7 @@ public class ParticipanteServiceTest {
         assertThrows(IdNaoEncontradoException.class,()->participanteService.buscarID(idParticipante));
     }
 
-    // --- METODO DE BUSCAR TODOS OS PARTICIPANTES ---
+    // --- BUSCAR TODOS OS PARTICIPANTES ---
 
     @Test
     void buscarTodosOsParticipantes()
@@ -155,7 +155,7 @@ public class ParticipanteServiceTest {
         verify(participanteRepository).findAll();
     }
 
-    // --- METODO BUSCAR POR EMAIL ---
+    // --- BUSCAR POR EMAIL ---
 
     @Test
     void deveBuscarParticipantePorEmail()
@@ -177,7 +177,7 @@ public class ParticipanteServiceTest {
         assertThrows(EmailNaoEncontradoException.class,()->participanteService.buscarPorEmail(emailParticipante));
     }
 
-    // --- METODO BUSCAR PARTICIPANTE POR NOME
+    // --- BUSCAR PARTICIPANTE POR NOME ---
 
     @Test
     void deveBuscarParticpantePorNome()
@@ -209,7 +209,7 @@ public class ParticipanteServiceTest {
         assertThrows(NomeNaoEncontradoException.class,()->participanteService.buscarPorNome(nomeParticipante));
     }
 
-    // --- METODO DE DELEÇÃO DE PARTICIPANTE ---
+    // --- DELEÇÃO DE PARTICIPANTE ---
 
     @Test
     void deveDeletarParticipante()
