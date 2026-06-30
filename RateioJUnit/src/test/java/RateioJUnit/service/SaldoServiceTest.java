@@ -38,7 +38,7 @@ public class SaldoServiceTest {
     SaldoService saldoService;
 
 
-    // --- METODO PARA LISTAR TODOS OS SALDOS ---
+    // --- LISTAR TODOS OS SALDOS ---
 
     @Test
     void deveListarTodosOsSaldos()
@@ -80,7 +80,7 @@ public class SaldoServiceTest {
         verify(saldoRepository).findAll();
     }
 
-    // --- METODO PARA LISTAR SALDO POR USUÁRIO
+    // --- LISTAR SALDO POR USUÁRIO ---
 
     @Test
     void deveRetornarSaldoIndividualPorParticipante()
@@ -201,7 +201,7 @@ public class SaldoServiceTest {
         verify(saldoRepository,never()).findByDevedorId(anyLong());
     }
 
-    // --- METODO PARA MOSTRAR SALDO TOTAL ENTRE PARTICIPANTES ---
+    // --- EXIBIR SALDO TOTAL ENTRE PARTICIPANTES ---
 
     @Test
     void deveExibirSaldoTotalEntreParticipantes()
