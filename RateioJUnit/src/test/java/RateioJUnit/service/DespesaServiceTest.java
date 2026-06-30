@@ -15,7 +15,6 @@ import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
-import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,7 +49,6 @@ public class DespesaServiceTest {
     DespesaService despesaService;
 
     // --- ADICIONAR DESPESA ---
-
     @Test
     void deveAdicionarDespesa()
     {
@@ -202,7 +200,7 @@ public class DespesaServiceTest {
     void deveLancarExcecaoQuandoDespesaNaoEncontrada()
     {
         Long idDespesa = 2L;
-        
+
         DespesaUpdtDto despesaRequestDTO =
                 new DespesaUpdtDto("Compra Telefone",1L);
 
@@ -249,7 +247,6 @@ public class DespesaServiceTest {
     }
 
     // --- CANCELAR DESPESA ---
-
     @Test
     void deveCancelarDespesa()
     {
@@ -264,6 +261,20 @@ public class DespesaServiceTest {
     }
 
     @Test
+    void deveLancarExcecaoQuandoIdDeDespesaNaoEncontrado()
+    {
+        Long idDespesa = 2L;
+
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+        when(despesaRepository.findById(idDespesa)).thenReturn(Optional.empty());
+
+        assertThrows(IdNaoEncontradoException.class,()->despesaService.cancelarDespesa(idDespesa));
+
+        verify(despesaRepository).findById(idDespesa);
+        verify(despesaRepository,never()).save(despesa);
+    }
+
+    @Test
     void naoDeveCancelarDespesaFinalizada()
     {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("1500.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
@@ -272,7 +283,6 @@ public class DespesaServiceTest {
     }
 
     // --- BUSCA ENTRE DATAS ---
-
     @Test
     void deveLancarExcecaoQuandoDataFinalMenorQueDataInicial()
     {
