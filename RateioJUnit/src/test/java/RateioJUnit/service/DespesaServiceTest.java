@@ -245,6 +245,34 @@ public class DespesaServiceTest {
         verify(despesaRepository).findAll();
     }
 
+    // ---LISTAR DESPESA POR STATUS ---
+
+    @Test
+    void deveBuscarDespesaPorStatus()
+    {
+        StatusDespesa statusDespesa = StatusDespesa.FINALIZADA;
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findByStatusDespesa(statusDespesa)).thenReturn(List.of(despesa));
+
+        List<DespesaResponseDTO> response = despesaService.listarDespesaPorStatus(statusDespesa);
+        assertNotNull(response);
+        assertEquals(despesa.getStatusDespesa(),response.getFirst().statusDespesa());
+        assertEquals(despesa.getValorTotal(),response.getFirst().valorTotal());
+        assertEquals(despesa.getDescricao(),response.getFirst().descricao());
+
+        verify(despesaRepository).findByStatusDespesa(statusDespesa);
+    }
+
+    @Test
+    void deveLancarExcecaoCasoDespesaNaoEncontrada()
+    {
+        StatusDespesa statusDespesa = StatusDespesa.FINALIZADA;
+        when(despesaRepository.findByStatusDespesa(statusDespesa)).thenReturn(List.of());
+        assertThrows(DespesaInexistenteException.class,()->despesaService.listarDespesaPorStatus(statusDespesa));
+        verify(despesaRepository).findByStatusDespesa(statusDespesa);
+    }
+
     // --- FINALIZAR DESPESA ---
 
     @Test
