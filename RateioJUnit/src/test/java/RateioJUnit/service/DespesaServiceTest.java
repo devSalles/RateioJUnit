@@ -1,6 +1,7 @@
 package RateioJUnit.service;
 
 import RateioJUnit.core.exception.IdNaoEncontradoException;
+import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.core.exception.despesa.*;
 import RateioJUnit.dto.despesa.DespesaRequestDTO;
 import RateioJUnit.dto.despesa.DespesaResponseDTO;
@@ -15,6 +16,7 @@ import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,10 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -49,6 +52,7 @@ public class DespesaServiceTest {
     DespesaService despesaService;
 
     // --- ADICIONAR DESPESA ---
+
     @Test
     void deveAdicionarDespesa()
     {
@@ -123,6 +127,7 @@ public class DespesaServiceTest {
     }
 
     // --- ATUALIZAR DESPESA ---
+
     @Test
     void deveAtualizarDespesa()
     {
@@ -216,6 +221,7 @@ public class DespesaServiceTest {
     }
 
     // --- FINALIZAR DESPESA ---
+
     @Test
     void deveFinalizarDespesa()
     {
@@ -247,6 +253,7 @@ public class DespesaServiceTest {
     }
 
     // --- CANCELAR DESPESA ---
+
     @Test
     void deveCancelarDespesa()
     {
@@ -283,6 +290,45 @@ public class DespesaServiceTest {
     }
 
     // --- BUSCA ENTRE DATAS ---
+
+    @Test
+    void deveBuscarDespesaEntreDatas()
+    {
+        LocalDate dataInicial = LocalDate.of(2026,1,1);
+        LocalDate dataFinal = LocalDate.of(2026,2,2);
+
+        LocalDateTime dataInicialFormatada = dataInicial.atStartOfDay();
+        LocalDateTime dataFinalFormatada  = dataFinal.atTime(LocalTime.MAX);
+
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada)).thenReturn(List.of(despesa));
+
+        List<DespesaResponseDTO> response = despesaService.buscarEntreDatas(dataInicial,dataFinal);
+        assertEquals(1,response.size());
+        assertEquals(despesa.getDescricao(),response.getFirst().descricao());
+        assertEquals(despesa.getValorTotal(),response.getFirst().valorTotal());
+
+        verify(despesaRepository).findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada);
+
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoRetornaListaVazia()
+    {
+        LocalDate dataInicial = LocalDate.of(2026,1,1);
+        LocalDate dataFinal = LocalDate.of(2026,2,2);
+
+        LocalDateTime dataInicialFormatada = dataInicial.atStartOfDay();
+        LocalDateTime dataFinalFormatada  = dataFinal.atTime(LocalTime.MAX);
+
+        when(despesaRepository.findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada)).thenReturn(List.of());
+
+        assertThrows(NenhumRegistroException.class,()->despesaService.buscarEntreDatas(dataInicial,dataFinal));
+
+        verify(despesaRepository).findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada);
+    }
+
     @Test
     void deveLancarExcecaoQuandoDataFinalMenorQueDataInicial()
     {
