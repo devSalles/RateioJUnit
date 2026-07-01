@@ -220,6 +220,31 @@ public class DespesaServiceTest {
         verify(despesaRepository,never()).save(any(Despesa.class));
     }
 
+    // ---LISTAR TODAS AS DESPESAS ---
+
+    @Test
+    void deveListarTodasDespesas()
+    {
+        Despesa despesaUm = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+        Despesa despesaDois = DespesaFactory.criarDespesa(2L,new BigDecimal("200.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findAll()).thenReturn(List.of(despesaUm,despesaDois));
+
+        List<DespesaResponseDTO> response = despesaService.listarTodasDespesas();
+        assertNotNull(response);
+        assertEquals(2,response.size());
+
+        verify(despesaRepository).findAll();
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoNaoTiverDespesas()
+    {
+        when(despesaRepository.findAll()).thenReturn(List.of());
+        assertThrows(NenhumRegistroException.class,()->despesaService.listarTodasDespesas());
+        verify(despesaRepository).findAll();
+    }
+
     // --- FINALIZAR DESPESA ---
 
     @Test
