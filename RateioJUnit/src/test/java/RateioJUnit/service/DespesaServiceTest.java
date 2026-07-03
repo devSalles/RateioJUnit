@@ -16,7 +16,6 @@ import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -271,6 +270,35 @@ public class DespesaServiceTest {
         when(despesaRepository.findByStatusDespesa(statusDespesa)).thenReturn(List.of());
         assertThrows(DespesaInexistenteException.class,()->despesaService.listarDespesaPorStatus(statusDespesa));
         verify(despesaRepository).findByStatusDespesa(statusDespesa);
+    }
+
+    // --- BUSCAR DESPESA POR TIPO DE DIVISÃO ---
+
+    @Test
+    void deveBuscarDespesaPorTipoDeDivisao()
+    {
+        TipoDivisao tipoDivisao = TipoDivisao.IGUAL;
+        Despesa despesaUm = DespesaFactory.criarDespesa(1L,new BigDecimal("20.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+        Despesa despesaDois = DespesaFactory.criarDespesa(2L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findByTipoDivisao(tipoDivisao)).thenReturn(List.of(despesaUm,despesaDois));
+
+        List<DespesaResponseDTO> despesaResponse = despesaService.listarDespesaPorTipoDivisao(tipoDivisao);
+        assertEquals(2,despesaResponse.size());
+        assertEquals(despesaUm.getTipoDivisao(),despesaResponse.getFirst().tipoDivisao());
+        assertEquals(despesaDois.getTipoDivisao(),despesaResponse.getFirst().tipoDivisao());
+
+        verify(despesaRepository).findByTipoDivisao(tipoDivisao);
+    }
+
+
+    @Test
+    void deveLancarExcecaoQuandoTipoDeDivisaoDeDespesaNaoEncontrada()
+    {
+        TipoDivisao tipoDivisao = TipoDivisao.PERSONALIZADA;
+        when(despesaRepository.findByTipoDivisao(tipoDivisao)).thenReturn(List.of());
+        assertThrows(DespesaInexistenteException.class,()->despesaService.listarDespesaPorTipoDivisao(tipoDivisao));
+        verify(despesaRepository).findByTipoDivisao(tipoDivisao);
     }
 
     // --- FINALIZAR DESPESA ---
