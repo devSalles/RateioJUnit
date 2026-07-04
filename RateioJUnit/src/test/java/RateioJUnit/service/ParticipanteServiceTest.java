@@ -5,6 +5,7 @@ import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.core.exception.participante.EmailNaoEncontradoException;
 import RateioJUnit.core.exception.participante.EmailRepetidoCadastradoException;
 import RateioJUnit.core.exception.participante.NomeNaoEncontradoException;
+import RateioJUnit.core.exception.participante.ParticipantePossuiDespesasException;
 import RateioJUnit.dto.usuario.ParticipanteResponseDTO;
 import RateioJUnit.dto.usuario.ParticipanteResquestDTO;
 import RateioJUnit.entity.Participante;
@@ -219,6 +220,7 @@ public class ParticipanteServiceTest {
         when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
 
         when(participanteRepository.existsByIdAndDespesasPagasIsNotEmpty(idParticipante)).thenReturn(false);
+        when(participanteRepository.existsByIdAndDivisaoIsNotEmpty(idParticipante)).thenReturn(false);
         when(participanteRepository.existsByIdAndSaldoDevedorIsNotEmpty(idParticipante)).thenReturn(false);
         when(participanteRepository.existsByIdAndSaldoCredorIsNotEmpty(idParticipante)).thenReturn(false);
 
@@ -234,6 +236,21 @@ public class ParticipanteServiceTest {
         Long idParticipante = 1L;
         when(this.participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
         assertThrows(IdNaoEncontradoException.class,()->participanteService.deletarParticipante(idParticipante));
+    }
+
+    // Metodo para testar lançamento de exceção caso participante tenha despesa vinculada
+    @Test
+    void deveLancarExcecaoQuandoParticipantePossuirDespesa()
+    {
+        Long idParticipante = 1L;
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
+        when(participanteRepository.existsByIdAndDespesasPagasIsNotEmpty(idParticipante)).thenReturn(true);
+
+        assertThrows(ParticipantePossuiDespesasException.class,()->participanteService.deletarParticipante(idParticipante));
+
+        verify(participanteRepository,never()).delete(participante);
     }
 
     // --- METODO AUXILIAR ---
