@@ -125,6 +125,7 @@ public class ParticipanteServiceTest {
         Long idParticipante = 99L;
         when(participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
         assertThrows(IdNaoEncontradoException.class,()->participanteService.buscarID(idParticipante));
+        verify(participanteRepository).findById(idParticipante);
     }
 
     // --- BUSCAR TODOS OS PARTICIPANTES ---
@@ -176,6 +177,7 @@ public class ParticipanteServiceTest {
         String emailParticipante = "email@gmail.com";
         when(this.participanteRepository.findByEmail(emailParticipante)).thenReturn(Optional.empty());
         assertThrows(EmailNaoEncontradoException.class,()->participanteService.buscarPorEmail(emailParticipante));
+        verify(participanteRepository).findByEmail(emailParticipante);
     }
 
     // --- BUSCAR PARTICIPANTE POR NOME ---
@@ -208,6 +210,7 @@ public class ParticipanteServiceTest {
         String nomeParticipante = "Bernardo";
         when(this.participanteRepository.findByNome(nomeParticipante)).thenReturn(List.of());
         assertThrows(NomeNaoEncontradoException.class,()->participanteService.buscarPorNome(nomeParticipante));
+        verify(participanteRepository).findByNome(nomeParticipante);
     }
 
     // --- DELEÇÃO DE PARTICIPANTE ---
@@ -236,6 +239,7 @@ public class ParticipanteServiceTest {
         Long idParticipante = 1L;
         when(this.participanteRepository.findById(idParticipante)).thenReturn(Optional.empty());
         assertThrows(IdNaoEncontradoException.class,()->participanteService.deletarParticipante(idParticipante));
+        verify(participanteRepository).findById(idParticipante);
     }
 
     // Metodo para testar lançamento de exceção caso participante tenha despesa vinculada
