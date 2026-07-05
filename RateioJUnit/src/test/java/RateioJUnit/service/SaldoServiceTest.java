@@ -80,7 +80,7 @@ public class SaldoServiceTest {
         verify(saldoRepository).findAll();
     }
 
-    // --- LISTAR SALDO POR USUÁRIO ---
+    // --- LISTAR SALDO POR PARTICIPANTE ---
 
     @Test
     void deveRetornarSaldoIndividualPorParticipante()
@@ -131,6 +131,20 @@ public class SaldoServiceTest {
 
         verify(participanteService).buscarID(idParticipante);
         verify(saldoRepository).findByCredorIdOrDevedorId(idParticipante,idParticipante);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoParticipanteNaoExistirAoListarSaldoPorParticipante()
+    {
+        Long idParticipante = 1L;
+
+        when(participanteService.buscarID(idParticipante)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
+
+        IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->this.saldoService.listarPorParticipante(idParticipante));
+        assertEquals("Participante não encontrado",exception.getMessage());
+
+        verify(participanteService).buscarID(idParticipante);
+        verify(saldoRepository,never()).findByCredorIdAndDevedorId(anyLong(),anyLong());
     }
 
     // --- LISTAR SALDO TOTAL POR USUARIO ---
