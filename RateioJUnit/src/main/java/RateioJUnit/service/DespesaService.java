@@ -221,12 +221,12 @@ public class DespesaService {
     {
         if(despesa.getStatusDespesa() == StatusDespesa.FINALIZADA)
         {
-            throw new DespesaJaFinalizadaException();
+            throw new DespesaJaFinalizadaException("Despesa já finalizada");
         }
 
         if(despesa.getStatusDespesa() == StatusDespesa.CANCELADA)
         {
-            throw new DespesaCanceladaException();
+            throw new DespesaCanceladaException("Despesa cancelada não pode ser finalizada");
         }
     }
 
