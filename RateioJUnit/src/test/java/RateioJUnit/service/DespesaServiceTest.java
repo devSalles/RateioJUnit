@@ -123,6 +123,9 @@ public class DespesaServiceTest {
                 new DespesaRequestDTO("Viagem",new BigDecimal("9000.00"),1L,List.of(d1,d2), TipoDivisao.PERSONALIZADA);
 
         assertThrows(DiferenteValorTotalException.class,()-> despesaService.adicionarDespesa(despesaRequestDTO));
+
+        verify(participanteRepository).findById(1L);
+        verify(participanteRepository).findById(2L);
     }
 
     // --- ATUALIZAR DESPESA ---
@@ -352,6 +355,7 @@ public class DespesaServiceTest {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("60.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
+        verify(despesaRepository).findById(1L);
     }
 
     @Test
@@ -360,6 +364,7 @@ public class DespesaServiceTest {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("500.00"), StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
         assertThrows(DespesaCanceladaException.class,()->despesaService.finalizacaoDespesa(1L));
+        verify(despesaRepository).findById(1L);
     }
 
     // --- CANCELAR DESPESA ---
@@ -397,6 +402,7 @@ public class DespesaServiceTest {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("1500.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
+        verify(despesaRepository).findById(1L);
     }
 
     // --- BUSCA ENTRE DATAS ---
