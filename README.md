@@ -1,4 +1,31 @@
-# 📋 Regras de Negócio - Sistema de Rateio de Despesas
+# Sistema de Rateio de Despesas
+
+API REST desenvolvida em Java com Spring Boot para gerenciamento de despesas compartilhadas entre participantes.
+
+O sistema permite:
+
+- Cadastro de participantes;
+- Cadastro de despesas;
+- Divisão igual ou personalizada;
+- Cálculo automático de saldos;
+- Consulta de dívidas entre participantes.
+
+## Tecnologias
+
+- Java 21
+- Spring Boot
+- Spring Data JPA
+- Hibernate
+- Bean Validation
+- JUnit 5
+- Mockito
+- Lombok
+- OpenAPI (Swagger)
+- Maven
+
+---
+
+# 📋 Regras de Negócio 
 
 Este documento descreve todas as regras de negócio implementadas no sistema de rateio de despesas.
 
@@ -256,8 +283,6 @@ Base URL:
 | GET | `/buscar-por-nome` | Busca participantes pelo nome. |
 | DELETE | `/deletar-participante/{idParticipante}` | Remove um participante, caso ele não possua vínculos com despesas ou saldos. |
 
-## 👤 Participante
-
 ### Cadastrar Participante
 
 **Endpoint**
@@ -329,6 +354,37 @@ POST /Despesa/adicionar-despesa
   "tipoDivisao": "IGUAL"
 }
 ```
+
+### Descrição dos Campos
+
+| Campo | Tipo | Obrigatório | Descrição |
+|--------|------|-------------|-----------|
+| descricao | String | Sim | Descrição da despesa. |
+| valorTotal | Decimal | Sim | Valor total da despesa. |
+| idPagador | Long | Sim | ID do participante que realizou o pagamento. |
+| participantes | Lista | Sim | Lista de participantes da despesa. |
+| participantes[].idParticipante | Long | Sim | ID do participante. |
+| participantes[].valor | Decimal | Sim | Valor correspondente ao participante (utilizado na divisão personalizada). |
+| tipoDivisao | Enum | Sim | Tipo de divisão (`IGUAL` ou `PERSONALIZADA`). |
+
+---
+
+## 📌 Valores aceitos para `tipoDivisao`
+
+```text
+IGUAL
+PERSONALIZADA
+```
+
+---
+
+## 📌 Valores aceitos para `statusDespesa`
+
+```text
+CRIADA
+FINALIZADA
+CANCELADA
+```
 ---
 
 # 💰 Saldos
@@ -390,4 +446,56 @@ Exemplo:
 
 ```http
 GET /Despesa/buscar-despesa-por-data?inicio=2026-01-01&fim=2026-01-31
+```
+# 📁 Estrutura do Projeto
+
+```text
+RateioJUnit
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── RateioJUnit
+│   │   │       ├── controller
+│   │   │       │   ├── DespesaController.java
+│   │   │       │   ├── ParticipanteController.java
+│   │   │       │   └── SaldoController.java
+│   │   │       │
+│   │   │       ├── core
+│   │   │       │   ├── exception
+│   │   │       │   │   ├── despesa
+│   │   │       │   │   ├── participante
+│   │   │       │   │   ├── IdNaoEncontradoException.java
+│   │   │       │   │   └── NenhumRegistroException.java
+│   │   │       │   └── infra
+│   │   │       │
+│   │   │       ├── dto
+│   │   │       │   ├── despesa
+│   │   │       │   ├── divisao
+│   │   │       │   ├── saldo
+│   │   │       │   └── usuario
+│   │   │       │
+│   │   │       ├── entity
+│   │   │       ├── enums
+│   │   │       ├── repository
+│   │   │       ├── service
+│   │   │       └── RateioJUnitApplication.java
+│   │   │
+│   │   └── resources
+│   │
+│   └── test
+│       └── java
+│           └── RateioJUnit
+│               ├── factory
+│               │   ├── DespesaFactory.java
+│               │   ├── ParticipanteFactory.java
+│               │   └── SaldoFactory.java
+│               │
+│               ├── service
+│               │   ├── DespesaServiceTest.java
+│               │   ├── ParticipanteServiceTest.java
+│               │   └── SaldoServiceTest.java
+│               │
+│               └── RateioJUnitApplicationTests.java
+│
+└── pom.xml
 ```
