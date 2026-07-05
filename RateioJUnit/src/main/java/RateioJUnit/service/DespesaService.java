@@ -38,6 +38,11 @@ public class DespesaService {
     @Transactional
     public DespesaResponseDTO adicionarDespesa(DespesaRequestDTO despesaRequestDTO)
     {
+        if(despesaRequestDTO.valorTotal() == null || despesaRequestDTO.valorTotal().compareTo(BigDecimal.ZERO) <= 0)
+        {
+            throw new ValorTotalInvalidoException();
+        }
+
         Participante pagador = participanteService.buscarID(despesaRequestDTO.idPagador());
 
         List<Participante> pagadores = despesaRequestDTO.participantes()
