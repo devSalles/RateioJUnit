@@ -227,3 +227,116 @@ Não são permitidas as seguintes transições:
 - Despesas finalizadas não podem ser modificadas.
 - Despesas canceladas não podem ser finalizadas.
 - Participantes vinculados a despesas ou saldos não podem ser removidos.
+
+- # 🌐 API REST
+
+A API é composta por três controladores principais:
+
+- Participante
+- Despesa
+- Saldo
+
+---
+
+# 👤 Participantes
+
+Base URL:
+
+```
+/participante
+```
+
+| Método | Endpoint | Descrição |
+|---------|----------|-----------|
+| POST | `/adicionar-participante` | Cadastra um novo participante. |
+| PUT | `/atualizar-participante/{idParticipante}` | Atualiza os dados de um participante. |
+| GET | `/buscar-detalhes/{idParticipante}` | Busca um participante pelo ID. |
+| GET | `/buscar-todos-participantes` | Lista todos os participantes. |
+| GET | `/buscar-por-email` | Busca um participante pelo e-mail. |
+| GET | `/buscar-por-nome` | Busca participantes pelo nome. |
+| DELETE | `/deletar-participante/{idParticipante}` | Remove um participante, caso ele não possua vínculos com despesas ou saldos. |
+
+---
+
+# 💸 Despesas
+
+Base URL:
+
+```
+/Despesa
+```
+
+| Método | Endpoint | Descrição |
+|---------|----------|-----------|
+| POST | `/adicionar-despesa` | Cadastra uma nova despesa. |
+| PUT | `/atualizar-despesa/{id}` | Atualiza uma despesa que esteja com status **CRIADA**. |
+| PUT | `/finalizar-despesa/{id}` | Finaliza a despesa e calcula automaticamente os saldos. |
+| PUT | `/cancelar-despesa/{id}` | Cancela uma despesa criada e remove seus efeitos financeiros. |
+| GET | `/buscar-todas-despesa` | Lista todas as despesas cadastradas. |
+| GET | `/buscar-despesa-especifica/{id}` | Busca uma despesa pelo ID. |
+| GET | `/buscar-despesa-por-status` | Lista despesas por status. |
+| GET | `/buscar-despesa-por-data` | Busca despesas dentro de um intervalo de datas. |
+| GET | `/buscar-despesa-por-tipo-divisao` | Lista despesas pelo tipo de divisão. |
+
+---
+
+# 💰 Saldos
+
+Base URL:
+
+```
+/saldo
+```
+
+| Método | Endpoint | Descrição |
+|---------|----------|-----------|
+| GET | `/listar-todos-saldos` | Lista todos os saldos cadastrados. |
+| GET | `/participante/{idParticipante}` | Lista todos os saldos de um participante. |
+| GET | `/participante/{idParticipante}/total` | Consulta o total a receber e o total a pagar de um participante. |
+| GET | `/entre-dois-participantes` | Consulta o saldo total existente entre dois participantes. |
+
+---
+
+# 📌 Status da Despesa
+
+Os endpoints que recebem o parâmetro `statusDespesa` aceitam os seguintes valores:
+
+```text
+CRIADA
+FINALIZADA
+CANCELADA
+```
+
+---
+
+# 📌 Tipos de Divisão
+
+Os endpoints que recebem o parâmetro `tipoDivisao` aceitam os seguintes valores:
+
+```text
+IGUAL
+PERSONALIZADA
+```
+
+---
+
+# 📅 Consulta por Período
+
+O endpoint:
+
+```
+GET /Despesa/buscar-despesa-por-data
+```
+
+recebe dois parâmetros:
+
+| Parâmetro | Tipo |
+|-----------|------|
+| inicio | LocalDate |
+| fim | LocalDate |
+
+Exemplo:
+
+```http
+GET /Despesa/buscar-despesa-por-data?inicio=2026-01-01&fim=2026-01-31
+```
