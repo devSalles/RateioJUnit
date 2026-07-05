@@ -19,7 +19,7 @@ public class SaldoController {
 
     private final SaldoService saldoService;
 
-    @GetMapping
+    @GetMapping("/listar-todos-saldos")
     public ResponseEntity<List<SaldoResponseDTO>> listarTodosOsSaldos() {
         return ResponseEntity.ok(saldoService.listarTodosOsSaldos());
     }
