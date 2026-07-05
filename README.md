@@ -255,6 +255,8 @@ Não são permitidas as seguintes transições:
 - Despesas canceladas não podem ser finalizadas.
 - Participantes vinculados a despesas ou saldos não podem ser removidos.
 
+---
+
 - # 🌐 API REST
 
 A API é composta por três controladores principais:
