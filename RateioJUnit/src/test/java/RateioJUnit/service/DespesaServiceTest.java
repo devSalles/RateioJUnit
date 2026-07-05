@@ -128,6 +128,18 @@ public class DespesaServiceTest {
         verify(participanteRepository).findById(2L);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoValorTotalDespesaForMaiorOuIgualAZero()
+    {
+        DespesaRequestDTO despesaReqDto = new DespesaRequestDTO("compra pizza",BigDecimal.ZERO,1L,List.of(),TipoDivisao.IGUAL);
+
+        assertThrows(ValorTotalInvalidoException.class,()->despesaService.adicionarDespesa(despesaReqDto));
+
+        verifyNoInteractions(participanteService);
+        verifyNoInteractions(participanteRepository);
+        verifyNoInteractions(despesaRepository);
+    }
+
     // --- ATUALIZAR DESPESA ---
 
     @Test
