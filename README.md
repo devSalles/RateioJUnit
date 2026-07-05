@@ -256,6 +256,29 @@ Base URL:
 | GET | `/buscar-por-nome` | Busca participantes pelo nome. |
 | DELETE | `/deletar-participante/{idParticipante}` | Remove um participante, caso ele não possua vínculos com despesas ou saldos. |
 
+## 👤 Participante
+
+### Cadastrar Participante
+
+**Endpoint**
+
+```http
+POST /participante/adicionar-participante
+```
+**Request Body**
+
+```json
+{
+  "nome": "Maria Oliveira",
+  "email": "maria.oliveira@hotmail.com"
+}
+```
+```json
+{
+  "nome": "João Silva",
+  "email": "joao.silva@gmail.com"
+}
+```
 ---
 
 # 💸 Despesas
@@ -278,6 +301,34 @@ Base URL:
 | GET | `/buscar-despesa-por-data` | Busca despesas dentro de um intervalo de datas. |
 | GET | `/buscar-despesa-por-tipo-divisao` | Lista despesas pelo tipo de divisão. |
 
+### Cadastrar Despesa
+
+**Endpoint**
+
+```http
+POST /Despesa/adicionar-despesa
+```
+
+**Request Body**
+
+```json
+{
+  "descricao": "Almoço da equipe",
+  "valorTotal": 120.00,
+  "idPagador": 1,
+  "participantes": [
+    {
+      "idParticipante": 1,
+      "valor": 60.00
+    },
+    {
+      "idParticipante": 2,
+      "valor": 60.00
+    }
+  ],
+  "tipoDivisao": "IGUAL"
+}
+```
 ---
 
 # 💰 Saldos
