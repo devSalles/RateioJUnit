@@ -1,27 +1,84 @@
-# Sistema de Rateio de Despesas
+# 🧪 Projeto de Testes Unitários - Sistema de Rateio de Despesas
 
-API REST desenvolvida em Java com Spring Boot para gerenciamento de despesas compartilhadas entre participantes.
+## 📖 Sobre o Projeto
 
-O sistema permite:
+Este projeto foi desenvolvido com o objetivo de praticar e consolidar conceitos de **testes unitários em aplicações Java utilizando Spring Boot**.
 
-- Cadastro de participantes;
-- Cadastro de despesas;
-- Divisão igual ou personalizada;
-- Cálculo automático de saldos;
-- Consulta de dívidas entre participantes.
+Para isso, foi implementada uma API REST de gerenciamento de despesas compartilhadas entre participantes, contendo regras de negócio financeiras e validações que servem como base para a criação de testes unitários.
 
-## Tecnologias
+Os testes foram desenvolvidos utilizando **JUnit 5** e **Mockito**, buscando validar tanto cenários de sucesso quanto regras de negócio, exceções e casos de erro.
+
+---
+
+# 🎯 Objetivos
+
+- Praticar Testes Unitários com JUnit 5.
+- Utilizar Mockito para criação de mocks.
+- Validar regras de negócio.
+- Testar exceções.
+- Garantir alta cobertura dos Services.
+- Aplicar boas práticas de testes.
+
+---
+
+# 🚀 Tecnologias Utilizadas
 
 - Java 21
 - Spring Boot
 - Spring Data JPA
 - Hibernate
 - Bean Validation
+- Lombok
+- Maven
 - JUnit 5
 - Mockito
-- Lombok
-- OpenAPI (Swagger)
-- Maven
+- Swagger/OpenAPI
+
+---
+
+# 🧪 Testes Unitários
+
+O foco principal deste projeto está na camada de **Service**, onde estão concentradas todas as regras de negócio.
+
+### Tecnologias utilizadas
+
+- JUnit 5
+- Mockito
+
+### Camadas testadas
+
+- ✅ ParticipanteService
+- ✅ DespesaService
+- ✅ SaldoService
+
+### Estratégias utilizadas
+
+- Mock de Repositories
+- Mock de Services
+- Factories para criação de objetos
+- Testes positivos
+- Testes negativos
+- Testes de exceções
+- Validação de regras de negócio
+- Validação de cálculos financeiros
+
+---
+
+# 📊 Cobertura dos Testes
+
+Os testes contemplam cenários como:
+
+- Cadastro de participantes
+- Atualização de participantes
+- Exclusão de participantes
+- Cadastro de despesas
+- Atualização de despesas
+- Finalização de despesas
+- Cancelamento de despesas
+- Cálculo de saldos
+- Busca por filtros
+- Validação de exceções
+- Validação de regras financeiras
 
 ---
 
