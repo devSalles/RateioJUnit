@@ -516,6 +516,14 @@ Base URL:
 
 ---
 
+# 📖 Documentação da API
+
+Após iniciar a aplicação, acesse:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
 # 📌 Status da Despesa
 
 Os endpoints que recebem o parâmetro `statusDespesa` aceitam os seguintes valores:
