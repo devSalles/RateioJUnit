@@ -82,6 +82,59 @@ Os testes contemplam cenários como:
 
 ---
 
+# 📁 Estrutura do Projeto
+
+```text
+RateioJUnit
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── RateioJUnit
+│   │   │       ├── controller
+│   │   │       │   ├── DespesaController.java
+│   │   │       │   ├── ParticipanteController.java
+│   │   │       │   └── SaldoController.java
+│   │   │       │
+│   │   │       ├── core
+│   │   │       │   ├── exception
+│   │   │       │   │   ├── despesa
+│   │   │       │   │   ├── participante
+│   │   │       │   │   ├── IdNaoEncontradoException.java
+│   │   │       │   │   └── NenhumRegistroException.java
+│   │   │       │   └── infra
+│   │   │       │
+│   │   │       ├── dto
+│   │   │       │   ├── despesa
+│   │   │       │   ├── divisao
+│   │   │       │   ├── saldo
+│   │   │       │   └── usuario
+│   │   │       │
+│   │   │       ├── entity
+│   │   │       ├── enums
+│   │   │       ├── repository
+│   │   │       ├── service
+│   │   │       └── RateioJUnitApplication.java
+│   │   │
+│   │   └── resources
+│   │
+│   └── test
+│       └── java
+│           └── RateioJUnit
+│               ├── factory
+│               │   ├── DespesaFactory.java
+│               │   ├── ParticipanteFactory.java
+│               │   └── SaldoFactory.java
+│               │
+│               ├── service
+│               │   ├── DespesaServiceTest.java
+│               │   ├── ParticipanteServiceTest.java
+│               │   └── SaldoServiceTest.java
+│               │
+│               └── RateioJUnitApplicationTests.java
+│
+└── pom.xml
+```
+
 # 📋 Regras de Negócio 
 
 Este documento descreve todas as regras de negócio implementadas no sistema de rateio de despesas.
@@ -505,56 +558,4 @@ Exemplo:
 
 ```http
 GET /Despesa/buscar-despesa-por-data?inicio=2026-01-01&fim=2026-01-31
-```
-# 📁 Estrutura do Projeto
-
-```text
-RateioJUnit
-├── src
-│   ├── main
-│   │   ├── java
-│   │   │   └── RateioJUnit
-│   │   │       ├── controller
-│   │   │       │   ├── DespesaController.java
-│   │   │       │   ├── ParticipanteController.java
-│   │   │       │   └── SaldoController.java
-│   │   │       │
-│   │   │       ├── core
-│   │   │       │   ├── exception
-│   │   │       │   │   ├── despesa
-│   │   │       │   │   ├── participante
-│   │   │       │   │   ├── IdNaoEncontradoException.java
-│   │   │       │   │   └── NenhumRegistroException.java
-│   │   │       │   └── infra
-│   │   │       │
-│   │   │       ├── dto
-│   │   │       │   ├── despesa
-│   │   │       │   ├── divisao
-│   │   │       │   ├── saldo
-│   │   │       │   └── usuario
-│   │   │       │
-│   │   │       ├── entity
-│   │   │       ├── enums
-│   │   │       ├── repository
-│   │   │       ├── service
-│   │   │       └── RateioJUnitApplication.java
-│   │   │
-│   │   └── resources
-│   │
-│   └── test
-│       └── java
-│           └── RateioJUnit
-│               ├── factory
-│               │   ├── DespesaFactory.java
-│               │   ├── ParticipanteFactory.java
-│               │   └── SaldoFactory.java
-│               │
-│               ├── service
-│               │   ├── DespesaServiceTest.java
-│               │   ├── ParticipanteServiceTest.java
-│               │   └── SaldoServiceTest.java
-│               │
-│               └── RateioJUnitApplicationTests.java
-│
-└── pom.xml
 ```
