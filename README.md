@@ -368,6 +368,14 @@ Não são permitidas as seguintes transições:
 ---
 
 - # 🌐 API REST
+ 
+📖 Documentação da API
+
+Após iniciar a aplicação, acesse:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
 
 A API é composta por três controladores principais:
 
@@ -515,14 +523,6 @@ Base URL:
 | GET | `/entre-dois-participantes` | Consulta o saldo total existente entre dois participantes. |
 
 ---
-
-# 📖 Documentação da API
-
-Após iniciar a aplicação, acesse:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
 
 # 📌 Status da Despesa
 
