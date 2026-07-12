@@ -6,6 +6,7 @@ import RateioJUnit.dto.saldo.ResumoSaldoTotalResponseDTO;
 import RateioJUnit.dto.saldo.SaldoResponseDTO;
 import RateioJUnit.dto.saldo.SaldoTotalEntreParticipantesResponseDTO;
 import RateioJUnit.entity.Despesa;
+import RateioJUnit.entity.Divisao;
 import RateioJUnit.entity.Participante;
 import RateioJUnit.entity.Saldo;
 import RateioJUnit.enums.StatusDespesa;
@@ -15,14 +16,15 @@ import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.SaldoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +39,8 @@ public class SaldoServiceTest {
     @InjectMocks
     SaldoService saldoService;
 
+    @Captor
+    private ArgumentCaptor<List<Saldo>> saldoCaptor;
 
     // --- LISTAR TODOS OS SALDOS ---
 
@@ -311,5 +315,84 @@ public class SaldoServiceTest {
         verify(participanteService).buscarID(idCredor);
         verify(participanteService).buscarID(idDevedor);
         verify(saldoRepository,never()).findByCredorIdAndDevedorId(anyLong(),anyLong());
+    }
+
+    // --- CALCULAR SALDO ---
+
+    @Test
+    void deveCalcularSaldoCorretamente()
+    {
+        //Arrange
+        Participante pagador = new Participante();
+        pagador.setId(1L);
+        pagador.setNome("procopio");
+
+        Participante cleiton = new Participante();
+        cleiton.setId(2L);
+        cleiton.setNome("cleiton");
+
+        Participante carol = new Participante();
+        carol.setId(3L);
+        carol.setNome("carol");
+
+        Divisao divUm =  new Divisao();
+        divUm.setId(1L);
+        divUm.setParticipante(pagador);
+        divUm.setValor(new BigDecimal("40"));
+
+        Divisao divDois = new Divisao();
+        divDois.setId(2L);
+        divDois.setParticipante(cleiton);
+        divDois.setValor(new BigDecimal("30"));
+
+        Divisao divTres = new Divisao();
+        divTres.setId(3L);
+        divTres.setParticipante(carol);
+        divTres.setValor(new BigDecimal("30"));
+
+        Despesa despesa = new Despesa();
+        despesa.setPagador(pagador);
+        despesa.setDivisoes(List.of(divUm,divDois,divTres));
+
+        //Act
+        saldoService.calcularSaldo(despesa);
+
+        //Assert
+        verify(saldoRepository).saveAll(saldoCaptor.capture());
+
+        List<Saldo>saldos = saldoCaptor.getValue();
+
+        assertEquals(2,saldos.size());
+
+        assertEquals(cleiton,saldos.getFirst().getDevedor());
+        assertEquals(pagador,saldos.getFirst().getCredor());
+        assertEquals(new BigDecimal("30"),saldos.getFirst().getValor());
+
+        assertEquals(carol,saldos.get(1).getDevedor());
+        assertEquals(pagador,saldos.get(1).getCredor());
+        assertEquals(new BigDecimal("30"),saldos.get(1).getValor());
+    }
+
+    @Test
+    void deveNaoCriarSaldoQuandoHaSomentePagador()
+    {
+        Participante pagador = new Participante();
+        pagador.setId(1L);
+
+        Divisao divUm =  new Divisao();
+        divUm.setParticipante(pagador);
+        divUm.setValor(new BigDecimal("100.00"));
+
+        Despesa despesa = new Despesa();
+        despesa.setPagador(pagador);
+        despesa.setDivisoes(List.of(divUm));
+
+        saldoService.calcularSaldo(despesa);
+
+        verify(saldoRepository).saveAll(saldoCaptor.capture());
+
+        List<Saldo>saldos = saldoCaptor.getValue();
+
+        assertTrue(saldos.isEmpty());
     }
 }
