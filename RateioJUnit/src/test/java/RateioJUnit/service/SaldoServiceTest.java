@@ -491,4 +491,83 @@ public class SaldoServiceTest {
         assertEquals(1,caique.getSaldoDevedor().size());
         assertEquals(despesaDois.getId(),caique.getSaldoDevedor().getFirst().getDespesa().getId());
     }
+
+    @Test
+    void deveRemoverTodosOsSaldosDeParticipanteDaDespesa()
+    {
+        //Arrange
+        Despesa despesa = new Despesa();
+        despesa.setId(1L);
+
+        Participante caique = new Participante();
+        caique.setId(1L);
+        caique.setNome("caique");
+        caique.setSaldoCredor(new ArrayList<>());
+        caique.setSaldoDevedor(new ArrayList<>());
+
+        Saldo saldoCredorCaique =  new Saldo();
+        saldoCredorCaique.setDespesa(despesa);
+
+        Saldo saldoDevedorCaique =  new Saldo();
+        saldoDevedorCaique.setDespesa(despesa);
+
+        caique.getSaldoCredor().add(saldoCredorCaique);
+        caique.getSaldoDevedor().add(saldoDevedorCaique);
+
+        Participante othon = new Participante();
+        othon.setId(2L);
+        othon.setNome("alan");
+        othon.setSaldoCredor(new ArrayList<>());
+        othon.setSaldoDevedor(new ArrayList<>());
+
+        Saldo saldoDevedorothon =  new Saldo();
+        saldoDevedorothon.setDespesa(despesa);
+        Saldo saldoCredorOthon =  new Saldo();
+        saldoCredorOthon.setDespesa(despesa);
+
+        othon.getSaldoCredor().add(saldoCredorOthon);
+        othon.getSaldoDevedor().add(saldoDevedorothon);
+
+        Participante kaka = new Participante();
+        kaka.setId(3L);
+        kaka.setNome("kaka");
+        kaka.setSaldoCredor(new ArrayList<>());
+        kaka.setSaldoDevedor(new ArrayList<>());
+
+        Saldo saldoDevedorKaka =  new Saldo();
+        saldoDevedorKaka.setDespesa(despesa);
+        Saldo saldoCredorKaka =  new Saldo();
+        saldoCredorKaka.setDespesa(despesa);
+
+        kaka.getSaldoCredor().add(saldoCredorKaka);
+        kaka.getSaldoDevedor().add(saldoDevedorKaka);
+
+        Divisao divisaoCaique = new Divisao();
+        divisaoCaique.setId(1L);
+        divisaoCaique.setParticipante(caique);
+
+        Divisao divisaoAlan = new Divisao();
+        divisaoAlan.setId(2L);
+        divisaoAlan.setParticipante(othon);
+
+        Divisao divisaoKaka = new Divisao();
+        divisaoKaka.setId(3L);
+        divisaoKaka.setParticipante(kaka);
+
+        despesa.setDivisoes(List.of(divisaoCaique,divisaoAlan,divisaoKaka));
+
+        //Act
+        saldoService.removeSaldo(despesa);
+
+        //Assert
+        assertTrue(caique.getSaldoCredor().isEmpty());
+        assertTrue(caique.getSaldoDevedor().isEmpty());
+
+        assertTrue(othon.getSaldoCredor().isEmpty());
+        assertTrue(othon.getSaldoDevedor().isEmpty());
+
+        assertTrue(kaka.getSaldoCredor().isEmpty());
+        assertTrue(kaka.getSaldoDevedor().isEmpty());
+
+    }
 }
