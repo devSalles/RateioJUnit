@@ -257,6 +257,48 @@ public class ParticipanteServiceTest {
         verify(participanteRepository,never()).delete(participante);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoParticipantePossuirDivisoes()
+    {
+        Long idParticipante = 1L;
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
+        when(participanteRepository.existsByIdAndDivisaoIsNotEmpty(idParticipante)).thenReturn(true);
+
+        assertThrows(ParticipantePossuiDespesasException.class,()->participanteService.deletarParticipante(idParticipante));
+
+        verify(participanteRepository,never()).delete(participante);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoParticipantePossuirSaldoDevedor()
+    {
+        Long idParticipante = 1L;
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
+        when(participanteRepository.existsByIdAndSaldoDevedorIsNotEmpty(idParticipante)).thenReturn(true);
+
+        assertThrows(ParticipantePossuiDespesasException.class,()->participanteService.deletarParticipante(idParticipante));
+
+        verify(participanteRepository,never()).delete(participante);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoParticipantePossuirSaldoCredor()
+    {
+        Long idParticipante = 1L;
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteRepository.findById(idParticipante)).thenReturn(Optional.of(participante));
+        when(participanteRepository.existsByIdAndSaldoCredorIsNotEmpty(idParticipante)).thenReturn(true);
+
+        assertThrows(ParticipantePossuiDespesasException.class,()->participanteService.deletarParticipante(idParticipante));
+
+        verify(participanteRepository,never()).delete(participante);
+    }
+
     // --- METODO AUXILIAR ---
 
     void validarParticipante(Participante participante, ParticipanteResponseDTO responseDTO)
