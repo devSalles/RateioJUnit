@@ -449,5 +449,46 @@ public class SaldoServiceTest {
         assertEquals(1,caique.getSaldoDevedor().size());
         assertEquals(despesaDois.getId(),caique.getSaldoDevedor().getFirst().getDespesa().getId());
     }
-    
+
+    //Deve remover apenas os saldos da despesa atual, deixando os saldos da despesa anterior intacto
+    @Test
+    void deveRemoverOSaldoApenasDaDespesaPassada()
+    {
+        //Arrange
+        Participante caique = new Participante();
+        caique.setId(1L);
+        caique.setNome("caique");
+        caique.setSaldoCredor(new ArrayList<>());
+        caique.setSaldoDevedor(new ArrayList<>());
+
+        Despesa despesaUm = new Despesa();
+        despesaUm.setId(1L);
+
+        Despesa despesaDois = new Despesa();
+        despesaDois.setId(2L);
+
+        Saldo saldoCredor =  new Saldo();
+        saldoCredor.setDespesa(despesaDois);
+
+        Saldo saldoDevedor =  new Saldo();
+        saldoDevedor.setDespesa(despesaDois);
+
+        caique.getSaldoCredor().add(saldoCredor);
+        caique.getSaldoDevedor().add(saldoDevedor);
+
+        Divisao divisao =  new Divisao();
+        divisao.setParticipante(caique);
+
+        despesaUm.setDivisoes(List.of(divisao));
+
+        //Act
+        saldoService.removeSaldo(despesaUm);
+        
+        //Assert
+        assertEquals(1,caique.getSaldoCredor().size());
+        assertEquals(despesaDois.getId(),caique.getSaldoCredor().getFirst().getDespesa().getId());
+
+        assertEquals(1,caique.getSaldoDevedor().size());
+        assertEquals(despesaDois.getId(),caique.getSaldoDevedor().getFirst().getDespesa().getId());
+    }
 }
