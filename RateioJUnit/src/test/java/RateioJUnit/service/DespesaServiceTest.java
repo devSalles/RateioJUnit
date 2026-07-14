@@ -140,6 +140,26 @@ public class DespesaServiceTest {
         verifyNoInteractions(despesaRepository);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoValorDeDivisaoForNulo()
+    {
+        //Arrange
+        Participante participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteService.buscarID(1L)).thenReturn(participante);
+        when(participanteRepository.findById(1L)).thenReturn(Optional.of(participante));
+
+        DivisaoRequestDTO divDto = new DivisaoRequestDTO(1L,null);
+
+        //Act
+        DespesaRequestDTO despesaDTO =
+                new DespesaRequestDTO("Aluguel", new BigDecimal("100.00"), 1L, List.of(divDto), TipoDivisao.PERSONALIZADA);
+
+        //Assert
+        assertThrows(ValorNegativoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+        verify(participanteRepository).findById(1L);
+    }
+
     // --- ATUALIZAR DESPESA ---
 
     @Test
