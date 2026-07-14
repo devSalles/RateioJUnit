@@ -151,12 +151,35 @@ public class DespesaServiceTest {
 
         DivisaoRequestDTO divDto = new DivisaoRequestDTO(1L,null);
 
-        //Act
         DespesaRequestDTO despesaDTO =
                 new DespesaRequestDTO("Aluguel", new BigDecimal("100.00"), 1L, List.of(divDto), TipoDivisao.PERSONALIZADA);
 
+        //Act
+        ValorNegativoException exception = assertThrows(ValorNegativoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+
         //Assert
-        assertThrows(ValorNegativoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+        assertNotNull(exception);
+        verify(participanteRepository).findById(1L);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoValorDeDivisaoForNegativo()
+    {
+        //Arrange
+        Participante  participante = ParticipanteFactory.criarParticipante();
+
+        when(participanteService.buscarID(1L)).thenReturn(participante);
+        when(participanteRepository.findById(1L)).thenReturn(Optional.of(participante));
+
+        DivisaoRequestDTO divDto = new DivisaoRequestDTO(1L,new BigDecimal("-1000.00"));
+
+        DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Aluguel", new BigDecimal("6400.00"), 1L, List.of(divDto), TipoDivisao.PERSONALIZADA);
+
+        //Act
+        ValorNegativoException exception = assertThrows(ValorNegativoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+
+        //Assert
+        assertNotNull(exception);
         verify(participanteRepository).findById(1L);
     }
 
