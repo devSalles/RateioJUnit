@@ -233,6 +233,20 @@ public class DespesaServiceTest {
         verifyNoInteractions(despesaRepository);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoParticipanteNaDivisaoPersonalizadaNaoForEncontrado()
+    {
+        Participante p1 = ParticipanteFactory.criarParticipantePersonalizado(1L,"Erick");
+        Participante p2 = ParticipanteFactory.criarParticipantePersonalizado(2L,"Eugenio");
+
+        Despesa despesa = new Despesa();
+        despesa.setValorTotal(new BigDecimal("1000.00"));
+
+        List<DivisaoRequestDTO> participantesDTO = List.of(new DivisaoRequestDTO(1L, new BigDecimal("500.00")));
+
+        assertThrows(IdNaoEncontradoException.class,()->despesaService.AplicarDivisaoPersonalizada(despesa,List.of(p1,p2),participantesDTO));
+    }
+
     // --- ATUALIZAR DESPESA ---
 
     @Test
