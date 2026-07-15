@@ -55,8 +55,9 @@ public class DespesaServiceTest {
     // --- ADICIONAR DESPESA ---
 
     @Test
-    void deveAdicionarDespesa()
+    void deveAdicionarDespesaComDivisaoPersonalizada()
     {
+        //Arrange
         Participante Bernardo = ParticipanteFactory.criarParticipantePersonalizado(1L,"Bernardo");
         Participante Pietro = ParticipanteFactory.criarParticipantePersonalizado(2L,"Pietro");
 
@@ -70,8 +71,34 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesaRequestDTO =
                 new DespesaRequestDTO("Pizza",new BigDecimal("100.00"),1L, List.of(d1,d2), TipoDivisao.PERSONALIZADA);
 
+        //Act
         despesaService.adicionarDespesa(despesaRequestDTO);
 
+        //Assert
+        verify(despesaRepository).save(any(Despesa.class));
+    }
+
+    @Test
+    void deveAdicionarDespesaComDivisaoIgual()
+    {
+        //Arrange
+        Participante pagador = ParticipanteFactory.criarParticipantePersonalizado(1L,"Pagador");
+        Participante participante = ParticipanteFactory.criarParticipantePersonalizado(2L,"Participante");
+
+        when(participanteService.buscarID(1L)).thenReturn(pagador);
+        when(participanteRepository.findById(1L)).thenReturn(Optional.of(pagador));
+        when(participanteRepository.findById(2L)).thenReturn(Optional.of(participante));
+
+        DivisaoRequestDTO d1 = new DivisaoRequestDTO(1L,new BigDecimal("50.00"));
+        DivisaoRequestDTO d2 = new DivisaoRequestDTO(2L,new BigDecimal("50.00"));
+
+        DespesaRequestDTO despesaRequestDTO =
+                new DespesaRequestDTO("Compra chocolate",new BigDecimal("100.00"),1L, List.of(d1,d2), TipoDivisao.IGUAL);
+
+        //Act
+        despesaService.adicionarDespesa(despesaRequestDTO);
+
+        //Assert
         verify(despesaRepository).save(any(Despesa.class));
     }
 
@@ -89,6 +116,8 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Queijo",new BigDecimal("100.00"),1L,List.of(d1),TipoDivisao.PERSONALIZADA);
 
         assertThrows(PagadorNaoEstaNaListaException.class, ()-> despesaService.adicionarDespesa(despesaDTO));
+
+        verify(participanteService).buscarID(1L);
     }
 
     @Test
