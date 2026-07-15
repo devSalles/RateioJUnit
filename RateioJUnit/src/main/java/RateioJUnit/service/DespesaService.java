@@ -222,7 +222,7 @@ public class DespesaService {
                 .orElseThrow(() -> new IdNaoEncontradoException("Despesa não encontrada"));
     }
 
-    private void validarFinalizacaoDespesa(Despesa despesa)
+        private void validarFinalizacaoDespesa(Despesa despesa)
     {
         if(despesa.getStatusDespesa() == StatusDespesa.FINALIZADA)
         {

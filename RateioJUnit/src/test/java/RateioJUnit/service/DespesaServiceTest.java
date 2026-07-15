@@ -506,7 +506,7 @@ public class DespesaServiceTest {
     {
         Long idDespesa = 2L;
 
-        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10.00"),StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.empty());
 
         assertThrows(IdNaoEncontradoException.class,()->despesaService.cancelarDespesa(idDespesa));
@@ -520,7 +520,7 @@ public class DespesaServiceTest {
     {
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("1500.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
-        assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
+        assertThrows(DespesaJaFinalizadaException.class,()->despesaService.cancelarDespesa(1L));
         verify(despesaRepository).findById(1L);
     }
 
