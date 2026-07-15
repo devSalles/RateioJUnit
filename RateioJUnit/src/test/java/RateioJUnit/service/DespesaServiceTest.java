@@ -3,6 +3,7 @@ package RateioJUnit.service;
 import RateioJUnit.core.exception.IdNaoEncontradoException;
 import RateioJUnit.core.exception.NenhumRegistroException;
 import RateioJUnit.core.exception.despesa.*;
+import RateioJUnit.core.exception.participante.ParticipanteInvalidoException;
 import RateioJUnit.dto.despesa.DespesaRequestDTO;
 import RateioJUnit.dto.despesa.DespesaResponseDTO;
 import RateioJUnit.dto.despesa.DespesaUpdtDto;
@@ -25,6 +26,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -181,6 +183,25 @@ public class DespesaServiceTest {
         //Assert
         assertNotNull(exception);
         verify(participanteRepository).findById(1L);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoListaDeParticipanteForNulo()
+    {
+        //Arrange
+        Participante pagador = ParticipanteFactory.criarParticipante();
+        when(participanteService.buscarID(1L)).thenReturn(pagador);
+        
+        List<DivisaoRequestDTO> participantes = new ArrayList<>();
+        participantes.add(null);
+
+        DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Compra Pizza", new BigDecimal("60.00"), 1L, participantes, TipoDivisao.PERSONALIZADA);
+
+        //Act
+        assertThrows(ParticipanteInvalidoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+
+        //Assert
+        verifyNoInteractions(despesaRepository);
     }
 
     // --- ATUALIZAR DESPESA ---
