@@ -524,6 +524,32 @@ public class DespesaServiceTest {
         verify(despesaRepository).findById(1L);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoCancelarDespesaJaCancelada()
+    {
+        Long idDespesa = 1L;
+        Despesa despesa = DespesaFactory.criarDespesa(idDespesa,new BigDecimal("45.00"),StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
+
+        assertThrows(DespesaCanceladaException.class,()->despesaService.cancelarDespesa(idDespesa));
+
+        verify(despesaRepository).findById(idDespesa);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCancelarDespesaJaFinalizada()
+    {
+        Long idDespesa = 1L;
+        Despesa despesa = DespesaFactory.criarDespesa(idDespesa,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
+        when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
+
+        assertThrows(DespesaJaFinalizadaException.class,()->despesaService.cancelarDespesa(1L));
+
+        verify(despesaRepository).findById(idDespesa);
+    }
+
     // --- BUSCA ENTRE DATAS ---
 
     @Test
