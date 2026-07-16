@@ -19,6 +19,7 @@ import RateioJUnit.repository.DespesaRepository;
 import RateioJUnit.repository.ParticipanteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -245,6 +246,40 @@ public class DespesaServiceTest {
         List<DivisaoRequestDTO> participantesDTO = List.of(new DivisaoRequestDTO(1L, new BigDecimal("500.00")));
 
         assertThrows(IdNaoEncontradoException.class,()->despesaService.AplicarDivisaoPersonalizada(despesa,List.of(p1,p2),participantesDTO));
+    }
+
+    @Test
+    void deveDistribuirValorIgualmenteComRestoDistribuidoEntreParticipantes()
+    {
+        Participante andre = ParticipanteFactory.criarParticipantePersonalizado(1L,"Andre");
+        Participante felipe =  ParticipanteFactory.criarParticipantePersonalizado(2L,"Felipe");
+        Participante julio = ParticipanteFactory.criarParticipantePersonalizado(3L,"Julio");
+
+        when(participanteService.buscarID(1L)).thenReturn(andre);
+        when(participanteRepository.findById(1L)).thenReturn(Optional.of(andre));
+        when(participanteRepository.findById(2L)).thenReturn(Optional.of(felipe));
+        when(participanteRepository.findById(3L)).thenReturn(Optional.of(julio));
+
+        DivisaoRequestDTO divUm = new DivisaoRequestDTO(1L,null);
+        DivisaoRequestDTO divDois = new DivisaoRequestDTO(2L,null);
+        DivisaoRequestDTO divTres = new DivisaoRequestDTO(3L,null);
+
+        DespesaRequestDTO despesa =
+                new DespesaRequestDTO("Compra fone",new BigDecimal("100.00"),1L,List.of(divUm,divDois,divTres),TipoDivisao.IGUAL);
+
+        despesaService.adicionarDespesa(despesa);
+
+        ArgumentCaptor<Despesa> captor = ArgumentCaptor.forClass(Despesa.class);
+        verify(despesaRepository).save(captor.capture());
+
+        List<Divisao>divisoes = captor.getValue().getDivisoes();
+
+        assertEquals(new BigDecimal("33.34"),divisoes.getFirst().getValor());
+        assertEquals(new BigDecimal("33.33"),divisoes.get(1).getValor());
+        assertEquals(new BigDecimal("33.33"),divisoes.get(2).getValor());
+
+        BigDecimal soma = divisoes.stream().map(Divisao::getValor).reduce(BigDecimal.ZERO,BigDecimal::add);
+        assertEquals(new BigDecimal("100.00"),soma);
     }
 
     // --- ATUALIZAR DESPESA ---
