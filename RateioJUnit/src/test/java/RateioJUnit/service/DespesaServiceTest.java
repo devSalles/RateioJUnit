@@ -110,13 +110,14 @@ public class DespesaServiceTest {
         Participante Helena = ParticipanteFactory.criarParticipantePersonalizado(2L,"Helena");
 
         when(participanteService.buscarID(1L)).thenReturn(Matheus);
-        when(participanteRepository.findById(2L)).thenReturn(Optional.of(Helena));
+        when(participanteRepository.findById(2L)).thenReturn(Optional.empty());
 
         DivisaoRequestDTO d1 = new DivisaoRequestDTO(2L, new BigDecimal("50.00"));
 
         DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Queijo",new BigDecimal("100.00"),1L,List.of(d1),TipoDivisao.PERSONALIZADA);
 
-        assertThrows(PagadorNaoEstaNaListaException.class, ()-> despesaService.adicionarDespesa(despesaDTO));
+        IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class, ()-> despesaService.adicionarDespesa(despesaDTO));
+        assertEquals("ID de pagador não encontrado",exception.getMessage());
 
         verify(participanteService).buscarID(1L);
     }
