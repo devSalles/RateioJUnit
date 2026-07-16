@@ -282,6 +282,15 @@ public class DespesaServiceTest {
         assertEquals(new BigDecimal("100.00"),soma);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoValorTotalForNulo()
+    {
+        DespesaRequestDTO despesaDTO =
+                new DespesaRequestDTO("Compra veiculo",null,1L,List.of(),TipoDivisao.IGUAL);
+
+        assertThrows(ValorTotalInvalidoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+    }
+
     // --- ATUALIZAR DESPESA ---
 
     @Test
