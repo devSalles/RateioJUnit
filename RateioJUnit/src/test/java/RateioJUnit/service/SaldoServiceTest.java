@@ -456,31 +456,15 @@ public class SaldoServiceTest {
     void deveRemoverOSaldoApenasDaDespesaPassada()
     {
         //Arrange
-        Participante caique = new Participante();
-        caique.setId(1L);
-        caique.setNome("caique");
-        caique.setSaldoCredor(new ArrayList<>());
-        caique.setSaldoDevedor(new ArrayList<>());
-
         Despesa despesaUm = new Despesa();
         despesaUm.setId(1L);
 
         Despesa despesaDois = new Despesa();
         despesaDois.setId(2L);
 
-        Saldo saldoCredor =  new Saldo();
-        saldoCredor.setDespesa(despesaDois);
+        Participante caique = ParticipanteFactory.criarParticipanteComSaldo(1L,"caique",despesaDois);
 
-        Saldo saldoDevedor =  new Saldo();
-        saldoDevedor.setDespesa(despesaDois);
-
-        caique.getSaldoCredor().add(saldoCredor);
-        caique.getSaldoDevedor().add(saldoDevedor);
-
-        Divisao divisao =  new Divisao();
-        divisao.setParticipante(caique);
-
-        despesaUm.setDivisoes(List.of(divisao));
+        despesaUm.setDivisoes(List.of(DivisaoFactory.criarDivisaoComParticipante(null,caique)));
 
         //Act
         saldoService.removeSaldo(despesaUm);
