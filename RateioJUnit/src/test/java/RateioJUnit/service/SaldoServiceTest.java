@@ -12,6 +12,7 @@ import RateioJUnit.entity.Saldo;
 import RateioJUnit.enums.StatusDespesa;
 import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.factory.DespesaFactory;
+import RateioJUnit.factory.DivisaoFactory;
 import RateioJUnit.factory.ParticipanteFactory;
 import RateioJUnit.repository.SaldoRepository;
 import org.junit.jupiter.api.Test;
@@ -499,62 +500,15 @@ public class SaldoServiceTest {
         Despesa despesa = new Despesa();
         despesa.setId(1L);
 
-        Participante caique = new Participante();
-        caique.setId(1L);
-        caique.setNome("caique");
-        caique.setSaldoCredor(new ArrayList<>());
-        caique.setSaldoDevedor(new ArrayList<>());
+        Participante caique = ParticipanteFactory.criarParticipanteComSaldo(1L,"caique",despesa);
+        Participante othon = ParticipanteFactory.criarParticipanteComSaldo(2L,"othon",despesa);
+        Participante kaka = ParticipanteFactory.criarParticipanteComSaldo(3L,"kaka",despesa);
 
-        Saldo saldoCredorCaique =  new Saldo();
-        saldoCredorCaique.setDespesa(despesa);
+        Divisao divisaoCaique = DivisaoFactory.criarDivisaoComParticipante(1L,caique);
+        Divisao divisaoOthon = DivisaoFactory.criarDivisaoComParticipante(2L,othon);
+        Divisao divisaoKaka = DivisaoFactory.criarDivisaoComParticipante(3L,kaka);
 
-        Saldo saldoDevedorCaique =  new Saldo();
-        saldoDevedorCaique.setDespesa(despesa);
-
-        caique.getSaldoCredor().add(saldoCredorCaique);
-        caique.getSaldoDevedor().add(saldoDevedorCaique);
-
-        Participante othon = new Participante();
-        othon.setId(2L);
-        othon.setNome("alan");
-        othon.setSaldoCredor(new ArrayList<>());
-        othon.setSaldoDevedor(new ArrayList<>());
-
-        Saldo saldoDevedorothon =  new Saldo();
-        saldoDevedorothon.setDespesa(despesa);
-        Saldo saldoCredorOthon =  new Saldo();
-        saldoCredorOthon.setDespesa(despesa);
-
-        othon.getSaldoCredor().add(saldoCredorOthon);
-        othon.getSaldoDevedor().add(saldoDevedorothon);
-
-        Participante kaka = new Participante();
-        kaka.setId(3L);
-        kaka.setNome("kaka");
-        kaka.setSaldoCredor(new ArrayList<>());
-        kaka.setSaldoDevedor(new ArrayList<>());
-
-        Saldo saldoDevedorKaka =  new Saldo();
-        saldoDevedorKaka.setDespesa(despesa);
-        Saldo saldoCredorKaka =  new Saldo();
-        saldoCredorKaka.setDespesa(despesa);
-
-        kaka.getSaldoCredor().add(saldoCredorKaka);
-        kaka.getSaldoDevedor().add(saldoDevedorKaka);
-
-        Divisao divisaoCaique = new Divisao();
-        divisaoCaique.setId(1L);
-        divisaoCaique.setParticipante(caique);
-
-        Divisao divisaoAlan = new Divisao();
-        divisaoAlan.setId(2L);
-        divisaoAlan.setParticipante(othon);
-
-        Divisao divisaoKaka = new Divisao();
-        divisaoKaka.setId(3L);
-        divisaoKaka.setParticipante(kaka);
-
-        despesa.setDivisoes(List.of(divisaoCaique,divisaoAlan,divisaoKaka));
+        despesa.setDivisoes(List.of(divisaoCaique,divisaoOthon,divisaoKaka));
 
         //Act
         saldoService.removeSaldo(despesa);
