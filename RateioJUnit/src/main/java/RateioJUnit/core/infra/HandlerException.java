@@ -103,8 +103,8 @@ public class HandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageRestError);
     }
 
-    @ExceptionHandler(DespesaInexistenteException.class)
-    public ResponseEntity<MessageRestError> DespesaInexistenteException(DespesaInexistenteException ex){
+    @ExceptionHandler(TipoDivisaoInexistenteException.class)
+    public ResponseEntity<MessageRestError> TipoDivisaoInexistenteException(TipoDivisaoInexistenteException ex){
         MessageRestError messageRestError = new MessageRestError(HttpStatus.NOT_FOUND,ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageRestError);
     }

@@ -83,7 +83,7 @@ public class DespesaService {
         }
         else
         {
-            throw new DespesaInexistenteException();
+            throw new TipoDivisaoInexistenteException();
         }
 
         BigDecimal somaValorDiv = despesa.getDivisoes().stream().map(Divisao::getValor)
@@ -156,7 +156,7 @@ public class DespesaService {
 
         if (despesaStatus.isEmpty())
         {
-            throw new DespesaInexistenteException();
+            throw new TipoDivisaoInexistenteException();
         }
 
         return despesaStatus.stream().map(DespesaResponseDTO::fromDespesa).toList();
@@ -168,7 +168,7 @@ public class DespesaService {
 
         if (despesaTipoDivisao.isEmpty())
         {
-            throw new DespesaInexistenteException();
+            throw new TipoDivisaoInexistenteException();
         }
 
         return despesaTipoDivisao.stream().map(DespesaResponseDTO::fromDespesa).toList();

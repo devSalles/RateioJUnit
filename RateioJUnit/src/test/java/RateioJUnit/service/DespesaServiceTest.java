@@ -483,7 +483,7 @@ public class DespesaServiceTest {
     {
         StatusDespesa statusDespesa = StatusDespesa.FINALIZADA;
         when(despesaRepository.findByStatusDespesa(statusDespesa)).thenReturn(List.of());
-        assertThrows(DespesaInexistenteException.class,()->despesaService.listarDespesaPorStatus(statusDespesa));
+        assertThrows(TipoDivisaoInexistenteException.class,()->despesaService.listarDespesaPorStatus(statusDespesa));
         verify(despesaRepository).findByStatusDespesa(statusDespesa);
     }
 
@@ -512,7 +512,7 @@ public class DespesaServiceTest {
     {
         TipoDivisao tipoDivisao = TipoDivisao.PERSONALIZADA;
         when(despesaRepository.findByTipoDivisao(tipoDivisao)).thenReturn(List.of());
-        assertThrows(DespesaInexistenteException.class,()->despesaService.listarDespesaPorTipoDivisao(tipoDivisao));
+        assertThrows(TipoDivisaoInexistenteException.class,()->despesaService.listarDespesaPorTipoDivisao(tipoDivisao));
         verify(despesaRepository).findByTipoDivisao(tipoDivisao);
     }
 
