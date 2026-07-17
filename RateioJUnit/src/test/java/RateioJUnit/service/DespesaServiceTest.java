@@ -107,7 +107,6 @@ public class DespesaServiceTest {
     void deveLancarExcecaoQuandoPagadorNaoEstiverNaLista()
     {
         Participante Matheus = ParticipanteFactory.criarParticipantePersonalizado(1L,"Matheus");
-        Participante Helena = ParticipanteFactory.criarParticipantePersonalizado(2L,"Helena");
 
         when(participanteService.buscarID(1L)).thenReturn(Matheus);
         when(participanteRepository.findById(2L)).thenReturn(Optional.empty());
@@ -289,7 +288,27 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesaDTO =
                 new DespesaRequestDTO("Compra veiculo",null,1L,List.of(),TipoDivisao.IGUAL);
 
-        assertThrows(ValorTotalInvalidoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+        ValorTotalInvalidoException exception = assertThrows(ValorTotalInvalidoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+        assertEquals("Valor total inválido",exception.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoPagadorNaoEstiverNalista()
+    {
+        Participante pagador = ParticipanteFactory.criarParticipantePersonalizado(1L,"Helena");
+        Participante participante = ParticipanteFactory.criarParticipantePersonalizado(2L,"Carol");
+
+        when(participanteService.buscarID(1L)).thenReturn(pagador);
+        when(participanteRepository.findById(2L)).thenReturn(Optional.of(participante));
+
+        DivisaoRequestDTO divisaoDTO = new DivisaoRequestDTO(2L,new BigDecimal("100.00"));
+
+        DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Compra fone",new BigDecimal("200.00"),1L,List.of(divisaoDTO),TipoDivisao.IGUAL);
+
+        PagadorNaoEstaNaListaException exception = assertThrows(PagadorNaoEstaNaListaException.class,()->despesaService.adicionarDespesa(despesaDTO));
+        assertEquals("Pagador precisa estar na lista",exception.getMessage());
+
+        verify(participanteRepository).findById(2L);
     }
 
     // --- ATUALIZAR DESPESA ---
