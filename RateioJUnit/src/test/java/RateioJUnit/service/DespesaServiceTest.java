@@ -311,6 +311,25 @@ public class DespesaServiceTest {
         verify(participanteRepository).findById(2L);
     }
 
+    @Test
+    void deveLancarExcecaoQuandoStatusDeTipoDivisaoForNulo()
+    {
+        Participante pagador = ParticipanteFactory.criarParticipantePersonalizado(1L,"Joao");
+
+        when(participanteService.buscarID(1L)).thenReturn(pagador);
+        when(participanteRepository.findById(1L)).thenReturn(Optional.of(pagador));
+
+        DivisaoRequestDTO divisaoDTO = new DivisaoRequestDTO(1L,new BigDecimal("100.00"));
+        DespesaRequestDTO despesaDTO =
+                new DespesaRequestDTO("Compra pizza",new BigDecimal("100.00"),1L,List.of(divisaoDTO),null);
+
+        TipoDivisaoInexistenteException exception = assertThrows(TipoDivisaoInexistenteException.class,()->despesaService.adicionarDespesa(despesaDTO));
+        assertEquals("Tipo de despesa inexistente",exception.getMessage());
+
+        verify(participanteService).buscarID(1L);
+        verify(participanteRepository).findById(1L);
+    }
+
     // --- ATUALIZAR DESPESA ---
 
     @Test
