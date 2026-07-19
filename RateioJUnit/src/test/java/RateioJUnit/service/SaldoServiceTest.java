@@ -14,6 +14,7 @@ import RateioJUnit.enums.TipoDivisao;
 import RateioJUnit.factory.DespesaFactory;
 import RateioJUnit.factory.DivisaoFactory;
 import RateioJUnit.factory.ParticipanteFactory;
+import RateioJUnit.factory.SaldoFactory;
 import RateioJUnit.repository.SaldoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,6 +49,7 @@ public class SaldoServiceTest {
     @Test
     void deveListarTodosOsSaldos()
     {
+        //Arrange
         Participante devedor = ParticipanteFactory.criarParticipante();
         Participante credor = ParticipanteFactory.criarParticipante();
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"), StatusDespesa.CRIADA, TipoDivisao.IGUAL);
@@ -69,7 +70,10 @@ public class SaldoServiceTest {
 
         when(this.saldoRepository.findAll()).thenReturn(List.of(saldoUm,saldoDois));
 
+        //Act
         List<SaldoResponseDTO>responseDTO = this.saldoService.listarTodosOsSaldos();
+
+        //Assert
         assertNotNull(responseDTO);
         assertEquals(2,responseDTO.size());
 
@@ -79,10 +83,13 @@ public class SaldoServiceTest {
     @Test
     void deveLancarExcecaoCasoAlistaEstejaVazia()
     {
+        //Arrange
         when(this.saldoRepository.findAll()).thenReturn(List.of());
 
+        //Act
         assertThrows(NenhumRegistroException.class,()->this.saldoService.listarTodosOsSaldos());
 
+        //Assert
         verify(saldoRepository).findAll();
     }
 
@@ -91,11 +98,13 @@ public class SaldoServiceTest {
     @Test
     void deveRetornarSaldoIndividualPorParticipante()
     {
+        //Arrange
         Long idParticipante = 1L;
 
         Participante devedor = ParticipanteFactory.criarParticipante();
         Participante credor = ParticipanteFactory.criarParticipante();
         Participante participante = ParticipanteFactory.criarParticipante();
+
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"), StatusDespesa.CRIADA, TipoDivisao.IGUAL);
 
         Saldo saldoUm = new Saldo();
@@ -115,7 +124,10 @@ public class SaldoServiceTest {
         when(this.participanteService.buscarID(idParticipante)).thenReturn(participante);
         when(this.saldoRepository.findByCredorIdOrDevedorId(idParticipante,idParticipante)).thenReturn(List.of(saldoUm,saldoDois));
 
+        //Act
         List<SaldoResponseDTO> response = this.saldoService.listarPorParticipante(idParticipante);
+
+        //Assert
         assertNotNull(response);
         assertEquals(2,response.size());
         assertEquals(new BigDecimal("100.00"),response.getFirst().valor());
@@ -127,14 +139,17 @@ public class SaldoServiceTest {
     @Test
     void deveLancarExcecaoCasoNaotenhaNenhumSaldoSaldo()
     {
+        //Arrange
         Long idParticipante = 1L;
         Participante participante = ParticipanteFactory.criarParticipante();
 
         when(participanteService.buscarID(idParticipante)).thenReturn(participante);
         when(this.saldoRepository.findByCredorIdOrDevedorId(idParticipante,idParticipante)).thenReturn(List.of());
 
+        //Act
         assertThrows(NenhumRegistroException.class,()->this.saldoService.listarPorParticipante(idParticipante));
 
+        //Assert
         verify(participanteService).buscarID(idParticipante);
         verify(saldoRepository).findByCredorIdOrDevedorId(idParticipante,idParticipante);
     }
@@ -142,11 +157,15 @@ public class SaldoServiceTest {
     @Test
     void deveLancarExcecaoQuandoParticipanteNaoExistirAoListarSaldoPorParticipante()
     {
+        //Arrange
         Long idParticipante = 1L;
 
         when(participanteService.buscarID(idParticipante)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
 
+        //Act
         IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->this.saldoService.listarPorParticipante(idParticipante));
+
+        //Assert
         assertEquals("Participante não encontrado",exception.getMessage());
 
         verify(participanteService).buscarID(idParticipante);
@@ -158,6 +177,7 @@ public class SaldoServiceTest {
     @Test
     void deveRetornarOSaldoTotaLDoUsuario()
     {
+        //Arrange
         Long idParticipante = 1L;
 
         Participante participante = ParticipanteFactory.criarParticipante();
@@ -178,7 +198,10 @@ public class SaldoServiceTest {
         when(saldoRepository.findByCredorId(idParticipante)).thenReturn(List.of(saldoUm,saldoDois));
         when(saldoRepository.findByDevedorId(idParticipante)).thenReturn(List.of(saldoTres,saldoQuatro));
 
+        //Act
         ResumoSaldoTotalResponseDTO response = saldoService.saldoTotalUsuario(idParticipante);
+
+        //Assert
         assertNotNull(response);
 
         verify(participanteService).buscarID(idParticipante);
@@ -189,6 +212,7 @@ public class SaldoServiceTest {
     @Test
     void deveRetornarZeroQuandoNenhumSaldo()
     {
+        //Arrange
         Long idParticipante = 1L;
 
         Participante participante = ParticipanteFactory.criarParticipante();
@@ -197,7 +221,10 @@ public class SaldoServiceTest {
         when(saldoRepository.findByCredorId(idParticipante)).thenReturn(List.of());
         when(saldoRepository.findByDevedorId(idParticipante)).thenReturn(List.of());
 
+        //Act
         ResumoSaldoTotalResponseDTO response = saldoService.saldoTotalUsuario(idParticipante);
+
+        //Assert
         assertNotNull(response);
 
         verify(participanteService).buscarID(idParticipante);
@@ -209,11 +236,15 @@ public class SaldoServiceTest {
     @Test
     void deveLancarExcecaoQuandoParticipanteNaoExistir()
     {
+        //Arrange
         Long idParticipante = 1L;
 
         when(participanteService.buscarID(idParticipante)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
 
+        //Act
         IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->saldoService.saldoTotalUsuario(idParticipante));
+
+        //Assert
         assertEquals("Participante não encontrado",exception.getMessage());
 
         verify(participanteService).buscarID(idParticipante);
@@ -226,16 +257,12 @@ public class SaldoServiceTest {
     @Test
     void deveExibirSaldoTotalEntreParticipantes()
     {
+        //Arrange
         Long idDevedor = 1L;
         Long idCredor = 2L;
 
-        Participante credor = ParticipanteFactory.criarParticipante();
-        credor.setId(idCredor);
-        credor.setNome("Juanito");
-
-        Participante devedor = ParticipanteFactory.criarParticipante();
-        devedor.setId(idDevedor);
-        devedor.setNome("Pietro");
+        Participante credor = ParticipanteFactory.criarParticipantePersonalizado(idCredor,"Juanito");
+        Participante devedor = ParticipanteFactory.criarParticipantePersonalizado(idDevedor,"Pietro");
 
         Saldo saldoUm = new Saldo();
         saldoUm.setValor(new BigDecimal("100.00"));
@@ -247,7 +274,10 @@ public class SaldoServiceTest {
         when(participanteService.buscarID(idCredor)).thenReturn(credor);
         when(participanteService.buscarID(idDevedor)).thenReturn(devedor);
 
+        //Act
         SaldoTotalEntreParticipantesResponseDTO response = saldoService.saldoTotalEntreParticipante(idDevedor,idCredor);
+
+        //Assert
         assertNotNull(response);
         assertEquals(idCredor,response.idCredor());
         assertEquals("Juanito",response.nomeCredor());
@@ -263,35 +293,37 @@ public class SaldoServiceTest {
     @Test
     void deveRetornarZeroQuandoNaoExistiremSaldos()
     {
+        //Arrange
         Long idCredor = 1L;
         Long idDevedor = 2L;
 
-        Participante credor = ParticipanteFactory.criarParticipante();
-        credor.setId(idCredor);
-        credor.setNome("Juanito");
-
-        Participante devedor = ParticipanteFactory.criarParticipante();
-        devedor.setId(idDevedor);
-        devedor.setNome("Pietro");
+        Participante credor = ParticipanteFactory.criarParticipantePersonalizado(idCredor,"Juanito");
+        Participante devedor = ParticipanteFactory.criarParticipantePersonalizado(idDevedor,"Pietro");
 
         when(participanteService.buscarID(idCredor)).thenReturn(credor);
         when(participanteService.buscarID(idDevedor)).thenReturn(devedor);
         when(saldoRepository.findByCredorIdAndDevedorId(idCredor,idDevedor)).thenReturn(List.of());
 
+        //Act
         SaldoTotalEntreParticipantesResponseDTO response = this.saldoService.saldoTotalEntreParticipante(idDevedor,idCredor);
 
+        //Assert
         assertEquals(BigDecimal.ZERO,response.valorTotal());
     }
 
     @Test
     void deveLancarExcecaoQuandoCredorNaoExistir()
     {
+        //Arrange
         Long idCredor = 1L;
         Long idDevedor = 2L;
 
         when(participanteService.buscarID(idCredor)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
 
+        //Act
         IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->saldoService.saldoTotalEntreParticipante(idDevedor,idCredor));
+
+        //Assert
         assertEquals("Participante não encontrado",exception.getMessage());
 
         verify(participanteService).buscarID(idCredor);
@@ -301,17 +333,19 @@ public class SaldoServiceTest {
     @Test
     void deveLancarExcecaoQuandoDevedorNaoExistir()
     {
+        //Arrange
         Long idCredor = 1L;
         Long idDevedor = 2L;
 
-        Participante credor =  ParticipanteFactory.criarParticipante();
-        credor.setId(idCredor);
-        credor.setNome("Juanito");
+        Participante credor = ParticipanteFactory.criarParticipantePersonalizado(idCredor,"Juanito");
 
         when(participanteService.buscarID(idCredor)).thenReturn(credor);
         when(participanteService.buscarID(idDevedor)).thenThrow(new IdNaoEncontradoException("Participante não encontrado"));
 
+        //Act
         IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class,()->saldoService.saldoTotalEntreParticipante(idDevedor,idCredor));
+
+        //Assert
         assertEquals("Participante não encontrado",exception.getMessage());
 
         verify(participanteService).buscarID(idCredor);
@@ -325,32 +359,13 @@ public class SaldoServiceTest {
     void deveCalcularSaldoCorretamente()
     {
         //Arrange
-        Participante pagador = new Participante();
-        pagador.setId(1L);
-        pagador.setNome("procopio");
+        Participante pagador = ParticipanteFactory.criarParticipantePersonalizado(1L,"Procopio");
+        Participante cleiton = ParticipanteFactory.criarParticipantePersonalizado(2L,"cleiton");
+        Participante carol = ParticipanteFactory.criarParticipantePersonalizado(3L,"carol");
 
-        Participante cleiton = new Participante();
-        cleiton.setId(2L);
-        cleiton.setNome("cleiton");
-
-        Participante carol = new Participante();
-        carol.setId(3L);
-        carol.setNome("carol");
-
-        Divisao divUm =  new Divisao();
-        divUm.setId(1L);
-        divUm.setParticipante(pagador);
-        divUm.setValor(new BigDecimal("40"));
-
-        Divisao divDois = new Divisao();
-        divDois.setId(2L);
-        divDois.setParticipante(cleiton);
-        divDois.setValor(new BigDecimal("30"));
-
-        Divisao divTres = new Divisao();
-        divTres.setId(3L);
-        divTres.setParticipante(carol);
-        divTres.setValor(new BigDecimal("30"));
+        Divisao divUm =  DivisaoFactory.criarDivisaoComValor(1L,pagador,new BigDecimal("40"));
+        Divisao divDois = DivisaoFactory.criarDivisaoComValor(2L,cleiton,new BigDecimal("30"));
+        Divisao divTres = DivisaoFactory.criarDivisaoComValor(3L,carol,new BigDecimal("30"));
 
         Despesa despesa = new Despesa();
         despesa.setPagador(pagador);
@@ -378,6 +393,7 @@ public class SaldoServiceTest {
     @Test
     void deveNaoCriarSaldoQuandoHaSomentePagador()
     {
+        //Arrange
         Participante pagador = new Participante();
         pagador.setId(1L);
 
@@ -389,8 +405,10 @@ public class SaldoServiceTest {
         despesa.setPagador(pagador);
         despesa.setDivisoes(List.of(divUm));
 
+        //Act
         saldoService.calcularSaldo(despesa);
 
+        //Assert
         verify(saldoRepository).saveAll(saldoCaptor.capture());
 
         List<Saldo>saldos = saldoCaptor.getValue();
@@ -403,42 +421,17 @@ public class SaldoServiceTest {
     @Test
     void deveRemoverSaldoDeDespesasCredorEDevedor()
     {
-
         //Arrange
-        Participante caique = new Participante();
-        caique.setId(1L);
-        caique.setNome("caique");
-        caique.setSaldoCredor(new ArrayList<>());
-        caique.setSaldoDevedor(new ArrayList<>());
-
         Despesa despesaUm = new Despesa();
         despesaUm.setId(1L);
 
         Despesa despesaDois = new Despesa();
         despesaDois.setId(2L);
 
-        Saldo saldoCredorDespesaUm =  new Saldo();
-        saldoCredorDespesaUm.setDespesa(despesaUm);
+        Participante caique = ParticipanteFactory.criarParticipanteComSaldo(1L,"caique",despesaUm);
+        SaldoFactory.adicionarSaldo(caique,despesaDois);
 
-        Saldo saldoDevedorDespesaUm = new Saldo();
-        saldoDevedorDespesaUm.setDespesa(despesaUm);
-
-        Saldo saldoCredorDespesaDois = new Saldo();
-        saldoCredorDespesaDois.setDespesa(despesaDois);
-
-        Saldo saldoDevedorDespesaDois = new Saldo();
-        saldoDevedorDespesaDois.setDespesa(despesaDois);
-
-        caique.getSaldoCredor().add(saldoCredorDespesaUm);
-        caique.getSaldoCredor().add(saldoCredorDespesaDois);
-
-        caique.getSaldoDevedor().add(saldoDevedorDespesaUm);
-        caique.getSaldoDevedor().add(saldoDevedorDespesaDois);
-
-        Divisao divisao =  new Divisao();
-        divisao.setParticipante(caique);
-
-        despesaUm.setDivisoes(List.of(divisao));
+        despesaUm.setDivisoes(List.of(DivisaoFactory.criarDivisaoComParticipante(null,caique)));
 
         //Act
         saldoService.removeSaldo(despesaUm);
@@ -468,7 +461,7 @@ public class SaldoServiceTest {
 
         //Act
         saldoService.removeSaldo(despesaUm);
-        
+
         //Assert
         assertEquals(1,caique.getSaldoCredor().size());
         assertEquals(despesaDois.getId(),caique.getSaldoCredor().getFirst().getDespesa().getId());
@@ -506,6 +499,5 @@ public class SaldoServiceTest {
 
         assertTrue(kaka.getSaldoCredor().isEmpty());
         assertTrue(kaka.getSaldoDevedor().isEmpty());
-
     }
 }
