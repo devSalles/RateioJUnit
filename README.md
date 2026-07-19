@@ -32,6 +32,7 @@ Os testes foram desenvolvidos utilizando **JUnit 5** e **Mockito**, buscando val
 - Maven
 - JUnit 5
 - Mockito
+- JaCoCo
 - Swagger/OpenAPI
 
 ---
@@ -44,6 +45,7 @@ O foco principal deste projeto está na camada de **Service**, onde estão conce
 
 - JUnit 5
 - Mockito
+- JaCoCo
 
 ### Camadas testadas
 
