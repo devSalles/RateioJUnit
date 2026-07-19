@@ -23,17 +23,17 @@ Os testes foram desenvolvidos utilizando **JUnit 5** e **Mockito**, buscando val
 
 # 🚀 Tecnologias Utilizadas
 
-- Java 21
-- Spring Boot
-- Spring Data JPA
-- Hibernate
-- Bean Validation
-- Lombok
-- Maven
-- JUnit 5
-- Mockito
-- JaCoCo
-- Swagger/OpenAPI
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen)
+![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-blue)
+![Hibernate](https://img.shields.io/badge/Hibernate-ORM-brown)
+![Bean Validation](https://img.shields.io/badge/Bean%20Validation-Jakarta-success)
+![Lombok](https://img.shields.io/badge/Lombok-red)
+![Maven](https://img.shields.io/badge/Maven-Build-blueviolet)
+![JUnit 5](https://img.shields.io/badge/JUnit-5-red)
+![Mockito](https://img.shields.io/badge/Mockito-green)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-Code%20Coverage-yellow)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-brightgreen)
 
 ---
 
@@ -43,9 +43,9 @@ O foco principal deste projeto está na camada de **Service**, onde estão conce
 
 ### Tecnologias utilizadas
 
-- JUnit 5
-- Mockito
-- JaCoCo
+![JUnit 5](https://img.shields.io/badge/JUnit-5-red)
+![Mockito](https://img.shields.io/badge/Mockito-green)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-Code%20Coverage-yellow)
 
 ### Camadas testadas
 
