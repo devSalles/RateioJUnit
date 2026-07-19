@@ -106,6 +106,7 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoPagadorNaoEstiverNaLista()
     {
+        //Arrange
         Participante Matheus = ParticipanteFactory.criarParticipantePersonalizado(1L,"Matheus");
 
         when(participanteService.buscarID(1L)).thenReturn(Matheus);
@@ -115,15 +116,18 @@ public class DespesaServiceTest {
 
         DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Queijo",new BigDecimal("100.00"),1L,List.of(d1),TipoDivisao.PERSONALIZADA);
 
+        //Act
         IdNaoEncontradoException exception = assertThrows(IdNaoEncontradoException.class, ()-> despesaService.adicionarDespesa(despesaDTO));
-        assertEquals("ID de pagador não encontrado",exception.getMessage());
 
+        //Assert
+        assertEquals("ID de pagador não encontrado",exception.getMessage());
         verify(participanteService).buscarID(1L);
     }
 
     @Test
     void deveLancarExcecaoQuandoParticipanteDuplicado()
     {
+        //Arrange
         Participante Lima = ParticipanteFactory.criarParticipantePersonalizado(1L,"Lima");
 
         when(participanteService.buscarID(1L)).thenReturn(Lima);
@@ -134,12 +138,14 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesaRequestDTO =
                 new DespesaRequestDTO("Compra telefone",new BigDecimal("2000.00"),1L,List.of(d1,d1), TipoDivisao.PERSONALIZADA);
 
+        //Act & Assert
         assertThrows(ParticipantesDuplicadosException.class, () -> despesaService.adicionarDespesa(despesaRequestDTO));
     }
 
     @Test
     void deveLancarExcecaoQuandoSomaDiferenteTotal()
     {
+        //Arrange
         Participante Victor = ParticipanteFactory.criarParticipantePersonalizado(1L,"Victor");
         Participante Anderson = ParticipanteFactory.criarParticipantePersonalizado(2L,"Anderson");
 
@@ -154,8 +160,10 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesaRequestDTO =
                 new DespesaRequestDTO("Viagem",new BigDecimal("9000.00"),1L,List.of(d1,d2), TipoDivisao.PERSONALIZADA);
 
+        //Act
         assertThrows(DiferenteValorTotalException.class,()-> despesaService.adicionarDespesa(despesaRequestDTO));
 
+        //Assert
         verify(participanteRepository).findById(1L);
         verify(participanteRepository).findById(2L);
     }
@@ -163,10 +171,13 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoValorTotalDespesaForMaiorOuIgualAZero()
     {
+        //Arrange
         DespesaRequestDTO despesaReqDto = new DespesaRequestDTO("compra pizza",BigDecimal.ZERO,1L,List.of(),TipoDivisao.IGUAL);
 
+        //Act
         assertThrows(ValorTotalInvalidoException.class,()->despesaService.adicionarDespesa(despesaReqDto));
 
+        //Assert
         verifyNoInteractions(participanteService);
         verifyNoInteractions(participanteRepository);
         verifyNoInteractions(despesaRepository);
@@ -221,7 +232,7 @@ public class DespesaServiceTest {
         //Arrange
         Participante pagador = ParticipanteFactory.criarParticipante();
         when(participanteService.buscarID(1L)).thenReturn(pagador);
-        
+
         List<DivisaoRequestDTO> participantes = new ArrayList<>();
         participantes.add(null);
 
@@ -237,6 +248,7 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoParticipanteNaDivisaoPersonalizadaNaoForEncontrado()
     {
+        //Arrange
         Participante p1 = ParticipanteFactory.criarParticipantePersonalizado(1L,"Erick");
         Participante p2 = ParticipanteFactory.criarParticipantePersonalizado(2L,"Eugenio");
 
@@ -245,12 +257,14 @@ public class DespesaServiceTest {
 
         List<DivisaoRequestDTO> participantesDTO = List.of(new DivisaoRequestDTO(1L, new BigDecimal("500.00")));
 
+        //Act & Assert
         assertThrows(IdNaoEncontradoException.class,()->despesaService.AplicarDivisaoPersonalizada(despesa,List.of(p1,p2),participantesDTO));
     }
 
     @Test
     void deveDistribuirValorIgualmenteComRestoDistribuidoEntreParticipantes()
     {
+        //Arrange
         Participante andre = ParticipanteFactory.criarParticipantePersonalizado(1L,"Andre");
         Participante felipe =  ParticipanteFactory.criarParticipantePersonalizado(2L,"Felipe");
         Participante julio = ParticipanteFactory.criarParticipantePersonalizado(3L,"Julio");
@@ -267,8 +281,10 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesa =
                 new DespesaRequestDTO("Compra fone",new BigDecimal("100.00"),1L,List.of(divUm,divDois,divTres),TipoDivisao.IGUAL);
 
+        //Act
         despesaService.adicionarDespesa(despesa);
 
+        //Assert
         ArgumentCaptor<Despesa> captor = ArgumentCaptor.forClass(Despesa.class);
         verify(despesaRepository).save(captor.capture());
 
@@ -285,16 +301,21 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoValorTotalForNulo()
     {
+        //Arrange
         DespesaRequestDTO despesaDTO =
                 new DespesaRequestDTO("Compra veiculo",null,1L,List.of(),TipoDivisao.IGUAL);
 
+        //Act
         ValorTotalInvalidoException exception = assertThrows(ValorTotalInvalidoException.class,()->despesaService.adicionarDespesa(despesaDTO));
+
+        //Assert
         assertEquals("Valor total inválido",exception.getMessage());
     }
 
     @Test
     void deveLancarExcecaoQuandoPagadorNaoEstiverNalista()
     {
+        //Arrange
         Participante pagador = ParticipanteFactory.criarParticipantePersonalizado(1L,"Helena");
         Participante participante = ParticipanteFactory.criarParticipantePersonalizado(2L,"Carol");
 
@@ -305,15 +326,18 @@ public class DespesaServiceTest {
 
         DespesaRequestDTO despesaDTO = new DespesaRequestDTO("Compra fone",new BigDecimal("200.00"),1L,List.of(divisaoDTO),TipoDivisao.IGUAL);
 
+        //Act
         PagadorNaoEstaNaListaException exception = assertThrows(PagadorNaoEstaNaListaException.class,()->despesaService.adicionarDespesa(despesaDTO));
-        assertEquals("Pagador precisa estar na lista",exception.getMessage());
 
+        //Assert
+        assertEquals("Pagador precisa estar na lista",exception.getMessage());
         verify(participanteRepository).findById(2L);
     }
 
     @Test
     void deveLancarExcecaoQuandoStatusDeTipoDivisaoForNulo()
     {
+        //Arrange
         Participante pagador = ParticipanteFactory.criarParticipantePersonalizado(1L,"Joao");
 
         when(participanteService.buscarID(1L)).thenReturn(pagador);
@@ -323,7 +347,10 @@ public class DespesaServiceTest {
         DespesaRequestDTO despesaDTO =
                 new DespesaRequestDTO("Compra pizza",new BigDecimal("100.00"),1L,List.of(divisaoDTO),null);
 
+        //Act
         TipoDivisaoInexistenteException exception = assertThrows(TipoDivisaoInexistenteException.class,()->despesaService.adicionarDespesa(despesaDTO));
+
+        //Assert
         assertEquals("Tipo de despesa inexistente",exception.getMessage());
 
         verify(participanteService).buscarID(1L);
@@ -335,10 +362,11 @@ public class DespesaServiceTest {
     @Test
     void deveAtualizarDespesa()
     {
+        //Arrange
         Long idDespesa = 1L;
         Participante participante = ParticipanteFactory.criarParticipantePersonalizado(1L,"Bernardo");
-        Despesa despesa =
-                DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
 
         Divisao divisao = new Divisao();
         divisao.setParticipante(participante);
@@ -349,7 +377,10 @@ public class DespesaServiceTest {
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
         when(participanteService.buscarID(idDespesa)).thenReturn(participante);
 
+        //Act
         DespesaResponseDTO response = despesaService.atualizarDespesa(idDespesa,despesaUpdt);
+
+        //Assert
         assertEquals("Compra pizza",response.descricao());
         assertEquals(participante.getId(),response.idPagador());
 
@@ -359,11 +390,13 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoPagadorNaoEstiverNaListaNoMetodoDeAtualizarDespesa()
     {
+        //Arrange
         Long idDespesa = 1L;
         Participante participanteLista = ParticipanteFactory.criarParticipantePersonalizado(1L,"Bernardo");
         Participante novoPagador = ParticipanteFactory.criarParticipantePersonalizado(2L,"Anderson");
-        Despesa despesa =
-                DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
+
         Divisao divisao = new Divisao();
         divisao.setParticipante(participanteLista);
 
@@ -374,8 +407,10 @@ public class DespesaServiceTest {
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
         when(participanteService.buscarID(2L)).thenReturn(novoPagador);
 
+        //Act
         assertThrows(PagadorNaoEstaNaListaException.class,()->despesaService.atualizarDespesa(idDespesa,despesaUpdt));
 
+        //Assert
         verify(despesaRepository).findById(idDespesa);
         verify(participanteService).buscarID(2L);
         verify(despesaRepository,never()).save(any());
@@ -384,10 +419,12 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoStatusEstiverIncorretoParaAtualizarDespesa()
     {
+        //Arrange
         Long idDespesa = 1L;
         Participante participante = ParticipanteFactory.criarParticipantePersonalizado(1L,"Kaique");
-        Despesa despesa =
-                DespesaFactory.criarDespesa(1L,new BigDecimal("500.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
+        Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("500.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
+
         Divisao divisao = new Divisao();
         divisao.setParticipante(participante);
 
@@ -398,8 +435,10 @@ public class DespesaServiceTest {
         when(participanteService.buscarID(1L)).thenReturn(participante);
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
 
+        //Act
         assertThrows(DespesaEmStatusInicialException.class,()->despesaService.atualizarDespesa(1L,despesaReqDTO));
 
+        //Assert
         verify(despesaRepository).findById(idDespesa);
         verify(participanteService).buscarID(1L);
         verify(despesaRepository,never()).save(any(Despesa.class));
@@ -408,6 +447,7 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoDespesaNaoEncontrada()
     {
+        //Arrange
         Long idDespesa = 2L;
 
         DespesaUpdtDto despesaRequestDTO =
@@ -415,8 +455,11 @@ public class DespesaServiceTest {
 
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.empty());
 
+        //Act
         IdNaoEncontradoException exception =
                 assertThrows(IdNaoEncontradoException.class,()->despesaService.atualizarDespesa(idDespesa,despesaRequestDTO));
+
+        //Assert
         assertEquals("Despesa não encontrada",exception.getMessage());
 
         verify(despesaRepository).findById(idDespesa);
@@ -429,12 +472,16 @@ public class DespesaServiceTest {
     @Test
     void deveListarTodasDespesas()
     {
+        //Arrange
         Despesa despesaUm = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         Despesa despesaDois = DespesaFactory.criarDespesa(2L,new BigDecimal("200.00"),StatusDespesa.CRIADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findAll()).thenReturn(List.of(despesaUm,despesaDois));
 
+        //Act
         List<DespesaResponseDTO> response = despesaService.listarTodasDespesas();
+
+        //Assert
         assertNotNull(response);
         assertEquals(2,response.size());
 
@@ -444,8 +491,13 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoNaoTiverDespesas()
     {
+        //Arrange
         when(despesaRepository.findAll()).thenReturn(List.of());
+
+        //Act
         assertThrows(NenhumRegistroException.class,()->despesaService.listarTodasDespesas());
+
+        //Assert
         verify(despesaRepository).findAll();
     }
 
@@ -454,12 +506,16 @@ public class DespesaServiceTest {
     @Test
     void deveBuscarDespesaPorId()
     {
+        //Arrange
         Long idDespesa = 1L;
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
 
+        //Act
         DespesaResponseDTO response = despesaService.buscarDespesaPorId(idDespesa);
+
+        //Assert
         assertEquals(despesa.getId(),response.id());
         assertEquals(despesa.getDescricao(),response.descricao());
         assertEquals(despesa.getValorTotal(),response.valorTotal());
@@ -472,9 +528,14 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoIdNaoEncontrado()
     {
+        //Arrange
         Long idDespesa = 1L;
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.empty());
+
+        //Act
         assertThrows(IdNaoEncontradoException.class,()->despesaService.buscarDespesaPorId(idDespesa));
+
+        //Assert
         verify(despesaRepository).findById(idDespesa);
     }
 
@@ -483,12 +544,16 @@ public class DespesaServiceTest {
     @Test
     void deveBuscarDespesaPorStatus()
     {
+        //Arrange
         StatusDespesa statusDespesa = StatusDespesa.FINALIZADA;
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findByStatusDespesa(statusDespesa)).thenReturn(List.of(despesa));
 
+        //Act
         List<DespesaResponseDTO> response = despesaService.listarDespesaPorStatus(statusDespesa);
+
+        //Assert
         assertNotNull(response);
         assertEquals(despesa.getStatusDespesa(),response.getFirst().statusDespesa());
         assertEquals(despesa.getValorTotal(),response.getFirst().valorTotal());
@@ -500,9 +565,14 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoCasoDespesaNaoEncontrada()
     {
+        //Arrange
         StatusDespesa statusDespesa = StatusDespesa.FINALIZADA;
         when(despesaRepository.findByStatusDespesa(statusDespesa)).thenReturn(List.of());
+
+        //Act
         assertThrows(TipoDivisaoInexistenteException.class,()->despesaService.listarDespesaPorStatus(statusDespesa));
+
+        //Assert
         verify(despesaRepository).findByStatusDespesa(statusDespesa);
     }
 
@@ -511,13 +581,17 @@ public class DespesaServiceTest {
     @Test
     void deveBuscarDespesaPorTipoDeDivisao()
     {
+        //Arrange
         TipoDivisao tipoDivisao = TipoDivisao.IGUAL;
         Despesa despesaUm = DespesaFactory.criarDespesa(1L,new BigDecimal("20.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         Despesa despesaDois = DespesaFactory.criarDespesa(2L,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findByTipoDivisao(tipoDivisao)).thenReturn(List.of(despesaUm,despesaDois));
 
+        //Act
         List<DespesaResponseDTO> despesaResponse = despesaService.listarDespesaPorTipoDivisao(tipoDivisao);
+
+        //Assert
         assertEquals(2,despesaResponse.size());
         assertEquals(despesaUm.getTipoDivisao(),despesaResponse.getFirst().tipoDivisao());
         assertEquals(despesaDois.getTipoDivisao(),despesaResponse.getFirst().tipoDivisao());
@@ -529,9 +603,14 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoTipoDeDivisaoDeDespesaNaoEncontrada()
     {
+        //Arrange
         TipoDivisao tipoDivisao = TipoDivisao.PERSONALIZADA;
         when(despesaRepository.findByTipoDivisao(tipoDivisao)).thenReturn(List.of());
+
+        //Act
         assertThrows(TipoDivisaoInexistenteException.class,()->despesaService.listarDespesaPorTipoDivisao(tipoDivisao));
+
+        //Assert
         verify(despesaRepository).findByTipoDivisao(tipoDivisao);
     }
 
@@ -540,32 +619,44 @@ public class DespesaServiceTest {
     @Test
     void deveFinalizarDespesa()
     {
+        //Arrange
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("100.00"), StatusDespesa.CRIADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
 
+        //Act
         despesaService.finalizacaoDespesa(1L);
 
+        //Assert
         assertEquals(StatusDespesa.FINALIZADA,despesa.getStatusDespesa());
-
         verify(saldoService).calcularSaldo(despesa);
     }
 
     @Test
     void naoDeveFinalizarDespesaJaFinalizada()
     {
+        //Arrange
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("60.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        //Act
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.finalizacaoDespesa(1L));
+
+        //Assert
         verify(despesaRepository).findById(1L);
     }
 
     @Test
     void naoDeveFinalizarDespesaCancelada()
     {
+        //Arrange
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("500.00"), StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        //Act
         assertThrows(DespesaCanceladaException.class,()->despesaService.finalizacaoDespesa(1L));
+
+        //Assert
         verify(despesaRepository).findById(1L);
     }
 
@@ -574,11 +665,15 @@ public class DespesaServiceTest {
     @Test
     void deveCancelarDespesa()
     {
+        //Arrange
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10000.00"), StatusDespesa.CRIADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
 
+        //Act
         despesaService.cancelarDespesa(1L);
+
+        //Assert
         assertEquals(StatusDespesa.CANCELADA,despesa.getStatusDespesa());
 
         verify(saldoService).removeSaldo(despesa);
@@ -587,13 +682,16 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoIdDeDespesaNaoEncontrado()
     {
+        //Arrange
         Long idDespesa = 2L;
 
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("10.00"),StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.empty());
 
+        //Act
         assertThrows(IdNaoEncontradoException.class,()->despesaService.cancelarDespesa(idDespesa));
 
+        //Assert
         verify(despesaRepository).findById(idDespesa);
         verify(despesaRepository,never()).save(despesa);
     }
@@ -601,35 +699,45 @@ public class DespesaServiceTest {
     @Test
     void naoDeveCancelarDespesaFinalizada()
     {
+        //Arrange
         Despesa despesa = DespesaFactory.criarDespesa(1L,new BigDecimal("1500.00"), StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
         when(despesaRepository.findById(1L)).thenReturn(Optional.of(despesa));
+
+        //Act
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.cancelarDespesa(1L));
+
+        //Assert
         verify(despesaRepository).findById(1L);
     }
 
     @Test
     void deveLancarExcecaoQuandoCancelarDespesaJaCancelada()
     {
+        //Arrange
         Long idDespesa = 1L;
         Despesa despesa = DespesaFactory.criarDespesa(idDespesa,new BigDecimal("45.00"),StatusDespesa.CANCELADA,TipoDivisao.IGUAL);
 
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
 
+        //Act
         assertThrows(DespesaCanceladaException.class,()->despesaService.cancelarDespesa(idDespesa));
 
+        //Assert
         verify(despesaRepository).findById(idDespesa);
     }
 
     @Test
     void deveLancarExcecaoQuandoCancelarDespesaJaFinalizada()
     {
+        //Arrange
         Long idDespesa = 1L;
         Despesa despesa = DespesaFactory.criarDespesa(idDespesa,new BigDecimal("100.00"),StatusDespesa.FINALIZADA,TipoDivisao.IGUAL);
-
         when(despesaRepository.findById(idDespesa)).thenReturn(Optional.of(despesa));
 
+        //Act
         assertThrows(DespesaJaFinalizadaException.class,()->despesaService.cancelarDespesa(1L));
 
+        //Assert
         verify(despesaRepository).findById(idDespesa);
     }
 
@@ -638,6 +746,7 @@ public class DespesaServiceTest {
     @Test
     void deveBuscarDespesaEntreDatas()
     {
+        //Arrange
         LocalDate dataInicial = LocalDate.of(2026,1,1);
         LocalDate dataFinal = LocalDate.of(2026,2,2);
 
@@ -648,7 +757,10 @@ public class DespesaServiceTest {
 
         when(despesaRepository.findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada)).thenReturn(List.of(despesa));
 
+        //Act
         List<DespesaResponseDTO> response = despesaService.buscarEntreDatas(dataInicial,dataFinal);
+
+        //Assert
         assertEquals(1,response.size());
         assertEquals(despesa.getDescricao(),response.getFirst().descricao());
         assertEquals(despesa.getValorTotal(),response.getFirst().valorTotal());
@@ -660,6 +772,7 @@ public class DespesaServiceTest {
     @Test
     void deveLancarExcecaoQuandoRetornaListaVazia()
     {
+        //Arrange
         LocalDate dataInicial = LocalDate.of(2026,1,1);
         LocalDate dataFinal = LocalDate.of(2026,2,2);
 
@@ -668,19 +781,24 @@ public class DespesaServiceTest {
 
         when(despesaRepository.findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada)).thenReturn(List.of());
 
+        //Act
         assertThrows(NenhumRegistroException.class,()->despesaService.buscarEntreDatas(dataInicial,dataFinal));
 
+        //Assert
         verify(despesaRepository).findByDataCriacaoBetween(dataInicialFormatada,dataFinalFormatada);
     }
 
     @Test
     void deveLancarExcecaoQuandoDataFinalMenorQueDataInicial()
     {
+        //Arrange
         LocalDate dataInicial = LocalDate.of(2026,1,10);
         LocalDate dataFinal = LocalDate.of(2025,5,30);
 
+        //Act
         assertThrows(DataExcpetion.class,()->despesaService.buscarEntreDatas(dataInicial,dataFinal));
 
+        //Assert
         verify(despesaRepository,never()).findByDataCriacaoBetween(any(LocalDateTime.class),any(LocalDateTime.class));
     }
 }
