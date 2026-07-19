@@ -1,27 +1,24 @@
-# 🧪 Projeto de Testes Unitários - Sistema de Rateio de Despesas
+# 🧪 Sistema de Rateio de Despesas
 
-## 📖 Sobre o Projeto
+<div align="center">
 
-Este projeto foi desenvolvido com o objetivo de praticar e consolidar conceitos de **testes unitários em aplicações Java utilizando Spring Boot**.
+## Projeto desenvolvido em Java utilizando Spring Boot
 
-Para isso, foi implementada uma API REST de gerenciamento de despesas compartilhadas entre participantes, contendo regras de negócio financeiras e validações que servem como base para a criação de testes unitários.
+### 🎯 Foco Principal
 
-Os testes foram desenvolvidos utilizando **JUnit 5** e **Mockito**, buscando validar tanto cenários de sucesso quanto regras de negócio, exceções e casos de erro.
+✔ Testes Unitários com **JUnit 5**
 
----
+✔ Simulação de dependências com **Mockito**
 
-# 🎯 Objetivos
+✔ Análise de cobertura utilizando **JaCoCo**
 
-- Praticar Testes Unitários com JUnit 5.
-- Utilizar Mockito para criação de mocks.
-- Validar regras de negócio.
-- Testar exceções.
-- Garantir alta cobertura dos Services.
-- Aplicar boas práticas de testes.
+✔ Validação de regras de negócio financeiras
 
----
+### 📊 Cobertura dos Testes
 
-# 🚀 Tecnologias Utilizadas
+## ✅ 100% de cobertura na camada Service
+
+<br>
 
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen)
@@ -35,52 +32,82 @@ Os testes foram desenvolvidos utilizando **JUnit 5** e **Mockito**, buscando val
 ![JaCoCo](https://img.shields.io/badge/JaCoCo-Code%20Coverage-yellow)
 ![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-brightgreen)
 
+</div>
+
 ---
 
-# 🧪 Testes Unitários
+# 📖 Sobre o Projeto
 
-O foco principal deste projeto está na camada de **Service**, onde estão concentradas todas as regras de negócio.
+Este projeto foi desenvolvido com o objetivo de consolidar conhecimentos em **testes unitários** aplicados a uma API REST desenvolvida com **Java** e **Spring Boot**.
 
-### Tecnologias utilizadas
+A aplicação simula um sistema de **rateio de despesas**, implementando regras de negócio financeiras, diferentes estratégias de divisão de valores, controle de estados da despesa e cálculo automático de saldos entre participantes.
 
-![JUnit 5](https://img.shields.io/badge/JUnit-5-red)
-![Mockito](https://img.shields.io/badge/Mockito-green)
-![JaCoCo](https://img.shields.io/badge/JaCoCo-Code%20Coverage-yellow)
+O principal objetivo foi validar essas regras por meio de testes unitários utilizando **JUnit 5**, **Mockito** e **JaCoCo**, garantindo maior confiabilidade e qualidade do código.
 
-### Camadas testadas
+---
+
+# 🧪 Estratégia de Testes
+
+Os testes unitários foram concentrados na camada **Service**, responsável por implementar toda a lógica de negócio da aplicação.
+
+<table>
+<tr>
+
+<td valign="top" width="35%">
+
+### 🏗️ Camadas testadas
 
 - ✅ ParticipanteService
 - ✅ DespesaService
 - ✅ SaldoService
 
-### Estratégias utilizadas
+</td>
 
-- Mock de Repositories
-- Mock de Services
-- Factories para criação de objetos
-- Testes positivos
-- Testes negativos
-- Testes de exceções
-- Validação de regras de negócio
-- Validação de cálculos financeiros
+<td valign="top" width="65%">
+
+### 🧪 Estratégias utilizadas
+
+- ✅ Mock de Repositories
+- ✅ Mock de Services
+- ✅ Factories para criação de objetos
+- ✅ Testes de sucesso e exceção
+- ✅ Validação de regras de negócio
+- ✅ Validação de cálculos financeiros
+
+</td>
+
+</tr>
+</table>
 
 ---
 
-# 📊 Cobertura dos Testes
+## 📊 Cobertura dos Testes
 
-Os testes contemplam cenários como:
+O projeto utiliza o **JaCoCo** para análise da cobertura dos testes unitários, garantindo que as principais regras de negócio estejam devidamente validadas.
 
-- Cadastro de participantes
-- Atualização de participantes
-- Exclusão de participantes
-- Cadastro de despesas
-- Atualização de despesas
-- Finalização de despesas
-- Cancelamento de despesas
-- Cálculo de saldos
-- Busca por filtros
-- Validação de exceções
-- Validação de regras financeiras
+### Relatório de Cobertura
+
+<p align="center">
+<img width="1018" alt="Relatório JaCoCo" src="https://github.com/user-attachments/assets/93f85c75-4a8d-4c5e-8a67-0c32b21b05a4"/>
+</p>
+
+### Resultados
+
+- ✅ **100%** de cobertura de instruções.
+- ✅ **100%** de cobertura de branches.
+- ✅ **100%** de cobertura de métodos.
+- ✅ **100%** de cobertura das classes da camada **Service**.
+
+---
+
+# 🎯 Objetivos
+
+- Desenvolver uma API REST utilizando Spring Boot.
+- Aplicar boas práticas de testes unitários.
+- Utilizar Mockito para isolamento das dependências.
+- Validar regras de negócio críticas.
+- Garantir alta cobertura da camada Service.
+- Aplicar boas práticas de qualidade de software.
 
 ---
 
