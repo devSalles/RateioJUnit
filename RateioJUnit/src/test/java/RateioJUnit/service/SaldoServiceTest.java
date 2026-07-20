@@ -391,7 +391,7 @@ public class SaldoServiceTest {
     }
 
     @Test
-    void deveNaoCriarSaldoQuandoHaSomentePagador()
+    void naoDeveCriarSaldoQuandoHaSomentePagador()
     {
         //Arrange
         Participante pagador = new Participante();
