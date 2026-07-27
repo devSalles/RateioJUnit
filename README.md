@@ -46,6 +46,18 @@ O principal objetivo foi validar essas regras por meio de testes unitários util
 
 ---
 
+# 🏗️ Arquitetura do Sistema
+
+<img width="1217" height="1283" alt="image" src="https://github.com/user-attachments/assets/db400149-aa25-49b8-8359-be44c63e3583" />
+
+---
+
+# 🔄 Fluxo de Dados
+
+<img width="1123" height="1390" alt="image" src="https://github.com/user-attachments/assets/eff4fa11-31de-4e6d-88c6-08297c39a5b5" />
+
+---
+
 # 🧪 Estratégia de Testes
 
 Os testes unitários foram concentrados na camada **Service**, responsável por implementar toda a lógica de negócio da aplicação.
