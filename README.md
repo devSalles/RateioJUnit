@@ -48,13 +48,12 @@ O principal objetivo foi validar essas regras por meio de testes unitários util
 
 # 🏗️ Arquitetura do Sistema
 
-<img width="1217" height="1283" alt="image" src="https://github.com/user-attachments/assets/db400149-aa25-49b8-8359-be44c63e3583" />
-
+<img width="858" height="1164" alt="RateioJUnit_Arquitetura" src="https://github.com/user-attachments/assets/c14fe830-9857-472e-b914-573f8b96b5dc" />
 ---
 
 # 🔄 Fluxo de Dados
 
-<img width="1123" height="1390" alt="image" src="https://github.com/user-attachments/assets/eff4fa11-31de-4e6d-88c6-08297c39a5b5" />
+<img width="907" height="1101" alt="RateioJUnit_Fluxo_de_Dados" src="https://github.com/user-attachments/assets/f0a1b83a-895f-4e4e-944b-fd86cf1a67cc" />
 
 ---
 
